@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require(`fs`).promises;
+const chalk = require(`chalk`);
 
 const {
   getRandomInt,
@@ -22,7 +23,7 @@ const readContent = async (filePath) => {
     const content = await fs.readFile(filePath, `utf8`);
     return content.trim().split(`\r\n`);
   } catch (err) {
-    console.error(err);
+    console.error(chalk.red(err));
     return [];
   }
 };
@@ -62,7 +63,7 @@ module.exports = {
     const [count] = args;
     const countOffer = Number.parseInt(count, 10);
     if (countOffer > 1000) {
-      console.error(`Не больше 1000 публикаций`);
+      console.error(chalk.red(`Не больше 1000 публикаций`));
       process.exit(ExitCode.error);
     }
 
@@ -71,9 +72,9 @@ module.exports = {
 
     try {
       await fs.writeFile(FILE_NAME, content);
-      console.log(`Operation success. File created.`);
+      console.log(chalk.green(`Operation success. File created.`));
     } catch (err) {
-      console.error(`Can't write data to file...`);
+      console.error(chalk.red(`Can't write data to file...`));
       process.exit(ExitCode.error);
     }
 

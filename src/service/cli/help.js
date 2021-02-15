@@ -1,5 +1,6 @@
 'use strict';
 
+const chalk = require(`chalk`);
 const helpText = `Программа запускает http-сервер и формирует файл с данными для API.
     
     Гайд:
@@ -12,6 +13,6 @@ const helpText = `Программа запускает http-сервер и ф�
 module.exports = {
   name: `--help`,
   run() {
-    console.info(helpText);
+    console.info(chalk.gray(helpText));
   }
 };
