@@ -59,12 +59,11 @@ module.exports = {
 
     http.createServer(onClientConnect)
        .listen(port)
-       .on(`listening`, (err) => {
-         if (err) {
-           return console.error(`Ошибка при создании сервера`, err);
-         }
-
+       .on(`listening`, () => {
          return console.info(chalk.green(`Ожидаю соединений на ${port}`));
+       })
+       .on(`error`, (err) => {
+         return console.error(`Ошибка при создании сервера`, err);
        });
   }
 };
