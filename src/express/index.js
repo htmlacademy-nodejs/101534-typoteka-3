@@ -8,7 +8,7 @@ const mainRoutes = require(`./routes/main-routes`);
 const articlesRoutes = require(`./routes/articles-routes`);
 const userRoutes = require(`./routes/user-routes`);
 
-const DEFAULT_PORT = 8010;
+const DEFAULT_PORT = 8080;
 const PUBLIC_DIR = `public`;
 
 const app = express();
