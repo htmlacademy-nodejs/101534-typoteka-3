@@ -18,7 +18,7 @@ const FILE_NAME = `mocks.json`;
 const FILE_SENTENCES_PATH = `./data/sentences.txt`;
 const FILE_TITLES_PATH = `./data/titles.txt`;
 const FILE_CATEGORIES_PATH = `./data/categories.txt`;
-const FILE_COMMENTS_PATH = `./data/comments.txt`
+const FILE_COMMENTS_PATH = `./data/comments.txt`;
 const DEFAULT_COUNT = 1;
 const MAX_COMMENTS = 4;
 
@@ -58,13 +58,14 @@ const generateComments = (count, comments) => (
 
 const generateOffers = (count, titles, categories, sentences, comments) => (
   Array(count || DEFAULT_COUNT).fill({}).map(() => ({
-  	id: nanoid(MAX_ID_LENGTH),
+    id: nanoid(MAX_ID_LENGTH),
     title: titles[getRandomInt(0, titles.length - 1)],
     createdDate: getRandomDate(3),
     announce: getAnnounceText(sentences),
     fullText: getFullText(sentences),
     category: [categories[getRandomInt(0, categories.length - 1)]],
     comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments),
+    picture: `Image.jpg`
   }))
 );
 

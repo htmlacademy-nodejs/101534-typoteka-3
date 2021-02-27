@@ -23,3 +23,5 @@ const app = new Router();
   search(app, new SearchService(mockData));
   article(app, new ArticleService(mockData), new CommentService());
 })();
+
+module.exports = app;

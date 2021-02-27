@@ -1,7 +1,6 @@
 'use strict';
 
 const chalk = require(`chalk`);
-const fs = require(`fs`).promises;
 const express = require(`express`);
 const {
   HttpCode, API_PREFIX
@@ -10,7 +9,6 @@ const routes = require(`../api`);
 const getMockData = require(`../lib/get-mock-data`);
 
 const DEFAULT_PORT = 3000;
-const FILENAME = `mocks.json`;
 
 const app = express();
 app.use(express.json());
@@ -37,19 +35,11 @@ module.exports = {
         .on(`error`, (err) => {
           return console.error(`Ошибка при создании сервера`, err);
         });
-      
+
     } catch (err) {
       console.error(`Произошла ошибка: ${err.message}`);
       process.exit(1);
     }
-
-    app.listen(port)
-      .on(`listening`, () => {
-        return console.info(chalk.green(`Ожидаю соединений на ${port}`));
-      })
-      .on(`error`, (err) => {
-        return console.error(`Ошибка при создании сервера`, err);
-      });
 
   }
 };
