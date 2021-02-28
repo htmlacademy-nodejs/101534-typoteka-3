@@ -16,12 +16,12 @@ const {
 
 const app = new Router();
 
-(async () => {
+const init = async () => {
   const mockData = await getMockData();
 
   category(app, new CategoryService(mockData));
   search(app, new SearchService(mockData));
   article(app, new ArticleService(mockData), new CommentService());
-})();
+};
 
-module.exports = app;
+module.exports = {app, init};

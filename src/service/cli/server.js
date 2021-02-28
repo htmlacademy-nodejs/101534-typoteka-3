@@ -6,13 +6,12 @@ const {
   HttpCode, API_PREFIX
 } = require(`../../constants`);
 const routes = require(`../api`);
-const getMockData = require(`../lib/get-mock-data`);
 
 const DEFAULT_PORT = 3000;
 
 const app = express();
 app.use(express.json());
-app.use(API_PREFIX, routes);
+app.use(API_PREFIX, routes.app);
 
 app.use((req, res) => res
   .status(HttpCode.NOT_FOUND)
@@ -21,25 +20,18 @@ app.use((req, res) => res
 
 module.exports = {
   name: `--server`,
-  async run(args) {
+  run(args) {
     const [customPort] = args;
     const port = Number.parseInt(customPort, 10) || DEFAULT_PORT;
 
-    try {
-      await getMockData();
-
-      app.listen(port)
-        .on(`listening`, () => {
-          return console.info(chalk.green(`Ожидаю соединений на ${port}`));
-        })
-        .on(`error`, (err) => {
-          return console.error(`Ошибка при создании сервера`, err);
-        });
-
-    } catch (err) {
-      console.error(`Произошла ошибка: ${err.message}`);
-      process.exit(1);
-    }
+    app.listen(port)
+      .on(`listening`, () => {
+        routes.init();
+        return console.info(chalk.green(`Ожидаю соединений на ${port}`));
+      })
+      .on(`error`, (err) => {
+        return console.error(`Ошибка при создании сервера`, err);
+      });
 
   }
 };
