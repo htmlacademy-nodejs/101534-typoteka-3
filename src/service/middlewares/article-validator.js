@@ -12,7 +12,9 @@ module.exports = (req, res, next) => {
   if (!keysExists) {
     res.status(HttpCode.BAD_REQUEST)
       .send(`Bad request`);
+  } else {
+    next();
   }
 
-  next();
+
 };
