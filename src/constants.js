@@ -18,4 +18,8 @@ module.exports = {
   },
   MAX_ID_LENGTH: 6,
   API_PREFIX: `/api`,
+  Env: {
+    DEVELOPMENT: `development`,
+    PRODUCTION: `production`
+  }
 };
