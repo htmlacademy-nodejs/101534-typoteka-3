@@ -115,16 +115,15 @@ const mockData = [
   }
 ];
 
-const app = express();
-app.use(express.json());
-category(app, new DataService(mockData));
-
 
 describe(`API returns category list`, () => {
 
   let response;
 
   beforeAll(async () => {
+  	const app = express();
+  	app.use(express.json());
+  	category(app, new DataService(mockData));
     response = await request(app)
       .get(`/categories`);
   });

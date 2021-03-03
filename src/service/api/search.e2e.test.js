@@ -119,9 +119,7 @@ const mockData = [
   }
 ];
 
-const app = express();
-app.use(express.json());
-search(app, new DataService(mockData));
+
 
 
 describe(`API returns article based on search query`, () => {
@@ -129,6 +127,9 @@ describe(`API returns article based on search query`, () => {
   let response;
 
   beforeAll(async () => {
+    const app = express();
+    app.use(express.json());
+    search(app, new DataService(mockData));
     response = await request(app)
       .get(`/search`)
       .query({
@@ -143,16 +144,26 @@ describe(`API returns article based on search query`, () => {
 });
 
 test(`API returns code 404 if nothing is found`,
-    () => request(app)
-      .get(`/search`)
-      .query({
-        query: `Такого заголовка нет`
-      })
-      .expect(HttpCode.NOT_FOUND)
+    () => {
+      const app = express();
+      app.use(express.json());
+      search(app, new DataService(mockData));
+      request(app)
+        .get(`/search`)
+        .query({
+          query: `Такого заголовка нет`
+        })
+        .expect(HttpCode.NOT_FOUND)
+    }
 );
 
 test(`API returns 400 when query string is absent`,
-    () => request(app)
-      .get(`/search`)
-      .expect(HttpCode.BAD_REQUEST)
+    () => {
+      const app = express();
+      app.use(express.json());
+      search(app, new DataService(mockData));
+        request(app)
+        .get(`/search`)
+        .expect(HttpCode.BAD_REQUEST)
+    }
 );
