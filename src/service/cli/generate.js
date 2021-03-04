@@ -65,7 +65,7 @@ const generateOffers = (count, titles, categories, sentences, comments) => (
     fullText: getFullText(sentences),
     category: [categories[getRandomInt(0, categories.length - 1)]],
     comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments),
-    picture: `Image.jpg`
+    picture: `sea-fullsize@1x.jpg`
   }))
 );
 

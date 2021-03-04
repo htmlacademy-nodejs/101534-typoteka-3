@@ -2,7 +2,7 @@
 
 const {HttpCode} = require(`../../constants`);
 
-const offerKeys = [`category`, `fullText`, `title`, `createdDate`, `comments`, `announce`];
+const offerKeys = [`category`, `fullText`, `title`, `createdDate`, `announce`];
 
 module.exports = (req, res, next) => {
   const newOffer = req.body;

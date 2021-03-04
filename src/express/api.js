@@ -29,6 +29,10 @@ class API {
     return this._load(`/articles/${id}`);
   }
 
+  getComments(id) {
+    return this._load(`/articles/${id}/comments`);
+  }
+
   search(query) {
     return this._load(`/search`, {params: {query}});
   }
