@@ -13,7 +13,7 @@ block content
                 .new-publication__date-form-division
                   .new-publication__date-block
                     label(for='new-publication-date' aria-label='Календарь')
-                    input#new-publication-date(type='text' name='date' placeholder='2019-03-21')
+                    input#new-publication-date(type='text' name='date' placeholder='2019-03-21' value=(articleData ? `${articleData.createdDate}` : ``))
               button.new-publication__button.button.button--colored(type='submit') Опубликовать
             a.popup__button.button.button--popup-close(aria-label='Закрыть окно')
               | Закрыть
@@ -22,7 +22,7 @@ block content
               .form__wrapper.form__wrapper--intro
                 .form__field
                   label
-                    input(type='text' name='title' placeholder='Заголовок' required='')
+                    input(type='text' name='title' placeholder='Заголовок' required='' value=(articleData ? `${articleData.title}` : ``))
                 .form__field.form__field--post-image
                   label
                     input#image-name-field(type='text' name='photo-name' placeholder='Фотография' readonly='')
@@ -35,7 +35,9 @@ block content
               .form__wrapper.form__wrapper--text
                 .form__field.form__field--publication-text
                   label
-                    textarea(rows='5' name='announcement' placeholder='Анонс публикации')
+                    textarea(rows='5' name='announcement' placeholder='Анонс публикации' value=(articleData ? `${articleData.announce}` : ``))
+                      | #{articleData ? `${articleData.announce}` : ``}
                 .form__field.form__field--publication-text
                   label
-                    textarea(rows='10' name='full-text' placeholder='Полный текст публикации')
+                    textarea(rows='10' name='full-text' placeholder='Полный текст публикации' value=(articleData ? `${articleData.fullText}` : ``))
+                      | #{articleData ? `${articleData.fullText}` : ``}
