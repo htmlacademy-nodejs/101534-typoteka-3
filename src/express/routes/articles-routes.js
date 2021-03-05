@@ -38,7 +38,7 @@ articlesRouter.post(`/add`,
         fullText: body[`full-text`],
         category: `test`
       };
-      res.render(`admin/new-post`, {articleData});
+
       try {
         await api.createArticle(articleData);
         res.redirect(`/my`);

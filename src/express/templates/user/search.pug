@@ -3,10 +3,18 @@ extends ../layout.pug
 block content
   main
     section.search-page
-      .search-page__wrapper
-        h1 Поиск
+      div(class=results !== "нет совпадений" ? "search-page__wrapper" : "search-page__wrapper search-page__wrapper--empty")
+        h1 Поиск 
         .search.search-page__form
-          form(action='#' method='get')
+          form(action='/search' method='get' enctype='text/plain')
             label
               input(type='text' name='search' placeholder='Что ищем?')
             button.search__button.button.button--transparent(type='submit') Найти
+          if results == "нет совпадений"
+            p.search-page__empty Ничего не нашлось
+          else if results
+            each result in results          
+              .search__result
+                time.search__date(datetime='2019-03-21T20:33') #{result.createdDate}
+                a.search__link
+                  | #{result.title}

@@ -11,7 +11,25 @@ mainRouter.get(`/`, async (req, res) => {
 
 mainRouter.get(`/register`, (req, res) => res.render(`user/sign-up`));
 mainRouter.get(`/login`, (req, res) => res.render(`user/login`));
-mainRouter.get(`/search`, (req, res) => res.render(`user/search`));
+mainRouter.get(`/search`,
+    async (req, res) => {
+      try {
+        const {search} = req.query;
+        if (!search) {
+          res.render(`user/search`);
+        }
+
+        const results = await api.search(search);
+
+        res.render(`user/search`, {
+          results
+        });
+      } catch (error) {
+        res.render(`user/search`, {
+          results: `нет совпадений`
+        });
+      }
+    });
 mainRouter.get(`/categories`, (req, res) => res.render(`admin/all-categories`));
 
 
