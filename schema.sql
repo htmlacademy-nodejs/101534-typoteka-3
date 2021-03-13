@@ -1,3 +1,10 @@
+CREATE DATABASE typoteka
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    CONNECTION LIMIT = -1;
+GRANT ALL ON DATABASE typoteka TO dagda25;
+
 CREATE TABLE categories(
   id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   name varchar(255) NOT NULL
