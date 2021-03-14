@@ -129,22 +129,22 @@ module.exports = {
     ).join(`,\n`);
 
     const content = `
-    INSERT INTO users(email, password_hash, first_name, last_name, avatar) VALUES
-    ${userValues};
-    INSERT INTO categories(name) VALUES
-    ${categoryValues};
-    ALTER TABLE articles DISABLE TRIGGER ALL;
-    INSERT INTO articles(title, text, picture, user_id) VALUES
-    ${articleValues};
-    ALTER TABLE articles ENABLE TRIGGER ALL;
-    ALTER TABLE article_categories DISABLE TRIGGER ALL;
-    INSERT INTO article_categories(article_id, category_id) VALUES
-    ${articleCategoryValues};
-    ALTER TABLE article_categories ENABLE TRIGGER ALL;
-    ALTER TABLE comments DISABLE TRIGGER ALL;
-    INSERT INTO COMMENTS(text, user_id, article_id) VALUES
-    ${commentValues};
-    ALTER TABLE comments ENABLE TRIGGER ALL;`;
+INSERT INTO users(email, password_hash, first_name, last_name, avatar) VALUES
+${userValues};
+INSERT INTO categories(name) VALUES
+${categoryValues};
+ALTER TABLE articles DISABLE TRIGGER ALL;
+INSERT INTO articles(title, text, picture, user_id) VALUES
+${articleValues};
+ALTER TABLE articles ENABLE TRIGGER ALL;
+ALTER TABLE article_categories DISABLE TRIGGER ALL;
+INSERT INTO article_categories(article_id, category_id) VALUES
+${articleCategoryValues};
+ALTER TABLE article_categories ENABLE TRIGGER ALL;
+ALTER TABLE comments DISABLE TRIGGER ALL;
+INSERT INTO COMMENTS(text, user_id, article_id) VALUES
+${commentValues};
+ALTER TABLE comments ENABLE TRIGGER ALL;`;
 
     try {
       await fs.writeFile(FILE_NAME, content);
