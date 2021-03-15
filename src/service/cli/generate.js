@@ -4,6 +4,7 @@ const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
 const {nanoid} = require(`nanoid`);
 
+
 const {
   getRandomInt,
   shuffle
@@ -11,14 +12,11 @@ const {
 
 const {
   ExitCode,
-  MAX_ID_LENGTH
+  MAX_ID_LENGTH,
+  paths
 } = require(`../../constants`);
 
 const FILE_NAME = `mocks.json`;
-const FILE_SENTENCES_PATH = `./data/sentences.txt`;
-const FILE_TITLES_PATH = `./data/titles.txt`;
-const FILE_CATEGORIES_PATH = `./data/categories.txt`;
-const FILE_COMMENTS_PATH = `./data/comments.txt`;
 const DEFAULT_COUNT = 1;
 const MAX_COMMENTS = 4;
 
@@ -72,10 +70,10 @@ const generateOffers = (count, titles, categories, sentences, comments) => (
 module.exports = {
   name: `--generate`,
   async run(args) {
-    const sentences = await readContent(FILE_SENTENCES_PATH);
-    const titles = await readContent(FILE_TITLES_PATH);
-    const categories = await readContent(FILE_CATEGORIES_PATH);
-    const comments = await readContent(FILE_COMMENTS_PATH);
+    const sentences = await readContent(paths.FILE_SENTENCES_PATH);
+    const titles = await readContent(paths.FILE_TITLES_PATH);
+    const categories = await readContent(paths.FILE_CATEGORIES_PATH);
+    const comments = await readContent(paths.FILE_COMMENTS_PATH);
 
     const [count] = args;
     const countOffer = Number.parseInt(count, 10);

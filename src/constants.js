@@ -21,5 +21,34 @@ module.exports = {
   Env: {
     DEVELOPMENT: `development`,
     PRODUCTION: `production`
-  }
+  },
+  paths: {
+    FILE_SENTENCES_PATH: `./data/sentences.txt`,
+    FILE_TITLES_PATH: `./data/titles.txt`,
+    FILE_CATEGORIES_PATH: `./data/categories.txt`,
+    FILE_COMMENTS_PATH: `./data/comments.txt`
+  },
+  users: [
+    {
+      email: `ivanov@example.com`,
+      passwordHash: `5f4dcc3b5aa765d61d8327deb882cf99`,
+      firstName: `Иван`,
+      lastName: `Иванов`,
+      avatar: `avatar1.jpg`
+    },
+    {
+      email: `petrov@example.com`,
+      passwordHash: `5f4dcc3b5aa765d61d8327deb882cf99`,
+      firstName: `Пётр`,
+      lastName: `Петров`,
+      avatar: `avatar2.jpg`
+    },
+    {
+      email: `test@example.com`,
+      passwordHash: `5f4dcc3b5aa765d61d8327deb882cf99`,
+      firstName: `Тест`,
+      lastName: `Тестов`,
+      avatar: `avatar3.jpg`
+    }
+  ]
 };

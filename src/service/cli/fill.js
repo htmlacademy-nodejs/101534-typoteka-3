@@ -5,11 +5,14 @@ const chalk = require(`chalk`);
 
 const {
   getRandomInt,
-  shuffle
+  shuffle,
+  readContent
 } = require(`../../utils`);
 
 const {
   ExitCode,
+  paths,
+  users
 } = require(`../../constants`);
 
 const PictureRestrict = {
@@ -18,23 +21,10 @@ const PictureRestrict = {
 };
 
 const FILE_NAME = `fill-db.sql`;
-const FILE_SENTENCES_PATH = `./data/sentences.txt`;
-const FILE_TITLES_PATH = `./data/titles.txt`;
-const FILE_CATEGORIES_PATH = `./data/categories.txt`;
-const FILE_COMMENTS_PATH = `./data/comments.txt`;
 const DEFAULT_COUNT = 3;
 const MIN_COMMENTS = 2;
 const MAX_COMMENTS = 4;
 
-const readContent = async (filePath) => {
-  try {
-    const content = await fs.readFile(filePath, `utf8`);
-    return content.trim().split(`\n`);
-  } catch (err) {
-    console.error(chalk.red(err));
-    return [];
-  }
-};
 
 const getFullText = (sentences) => {
   return shuffle(sentences).slice(1, getRandomInt(6, 10)).join(` `);
@@ -66,37 +56,13 @@ const generateArticles = (count, titles, categoryCount, userCount, sentences, co
 module.exports = {
   name: `--fill`,
   async run(args) {
-    const sentences = await readContent(FILE_SENTENCES_PATH);
-    const titles = await readContent(FILE_TITLES_PATH);
-    const categories = await readContent(FILE_CATEGORIES_PATH);
-    const commentSentences = await readContent(FILE_COMMENTS_PATH);
+    const sentences = await readContent(paths.FILE_SENTENCES_PATH);
+    const titles = await readContent(paths.FILE_TITLES_PATH);
+    const categories = await readContent(paths.FILE_CATEGORIES_PATH);
+    const commentSentences = await readContent(paths.FILE_COMMENTS_PATH);
 
     const [count] = args;
     const countArticle = Number.parseInt(count, 10);
-
-    const users = [
-      {
-        email: `ivanov@example.com`,
-        passwordHash: `5f4dcc3b5aa765d61d8327deb882cf99`,
-        firstName: `Иван`,
-        lastName: `Иванов`,
-        avatar: `avatar1.jpg`
-      },
-      {
-        email: `petrov@example.com`,
-        passwordHash: `5f4dcc3b5aa765d61d8327deb882cf99`,
-        firstName: `Пётр`,
-        lastName: `Петров`,
-        avatar: `avatar2.jpg`
-      },
-      {
-        email: `test@example.com`,
-        passwordHash: `5f4dcc3b5aa765d61d8327deb882cf99`,
-        firstName: `Тест`,
-        lastName: `Тестов`,
-        avatar: `avatar3.jpg`
-      }
-    ];
 
     const articles = generateArticles(countArticle, titles, categories.length, users.length, sentences, commentSentences);
 
