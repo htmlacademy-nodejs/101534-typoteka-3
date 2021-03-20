@@ -8,7 +8,7 @@ const routes = require(`../api`);
 const {getLogger} = require(`../lib/logger`);
 
 module.exports = {
-  name: `--server`,
+  name: `server`,
   run(args) {
     const DEFAULT_PORT = 3000;
 

@@ -54,7 +54,7 @@ const generateArticles = (count, titles, categoryCount, userCount, sentences, co
 );
 
 module.exports = {
-  name: `--fill`,
+  name: `fill`,
   async run(args) {
     const sentences = await readContent(paths.FILE_SENTENCES_PATH);
     const titles = await readContent(paths.FILE_TITLES_PATH);
