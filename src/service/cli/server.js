@@ -9,7 +9,7 @@ const {getLogger} = require(`../lib/logger`);
 const sequelize = require(`../lib/sequelize`);
 
 module.exports = {
-  name: `server`,
+  name: `--server`,
   async run(args) {
 
     const DEFAULT_PORT = 3000;

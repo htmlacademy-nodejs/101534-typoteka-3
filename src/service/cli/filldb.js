@@ -3,6 +3,10 @@
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
 const {nanoid} = require(`nanoid`);
+const sequelize = require(`../lib/sequelize`);
+const defineModels = require(`../models`);
+const {getLogger} = require(`../lib/logger`);
+const initDatabase = require(`../lib/init-db`);
 
 
 const {
@@ -25,7 +29,7 @@ const readContent = async (filePath) => {
     const content = await fs.readFile(filePath, `utf8`);
     return content.trim().split(`\n`);
   } catch (err) {
-    console.error(chalk.red(err));
+    console.error(`Error when reading file: ${err.message}`);
     return [];
   }
 };
@@ -35,6 +39,20 @@ const getRandomDate = (months = 1) => {
   const firstDate = new Date(secondDate.getFullYear(), secondDate.getMonth() - months + 1);
   const createdDate = new Date(getRandomInt(firstDate.getTime(), secondDate.getTime())).toLocaleDateString();
   return createdDate;
+};
+
+const getRandomSubarray = (items) => {
+  items = items.slice();
+  let count = getRandomInt(1, items.length - 1);
+  const result = [];
+  while (count--) {
+    result.push(
+        ...items.splice(
+            getRandomInt(0, items.length - 1), 1
+        )
+    );
+  }
+  return result;
 };
 
 const getAnnounceText = (sentences) => {
@@ -54,44 +72,47 @@ const generateComments = (count, comments) => (
   }))
 );
 
-const generateOffers = (count, titles, categories, sentences, comments) => (
+const generateArticles = (count, titles, categories, sentences, comments) => (
   Array(count || DEFAULT_COUNT).fill({}).map(() => ({
     id: nanoid(MAX_ID_LENGTH),
     title: titles[getRandomInt(0, titles.length - 1)],
     createdDate: getRandomDate(3),
     announce: getAnnounceText(sentences),
     fullText: getFullText(sentences),
-    category: [categories[getRandomInt(0, categories.length - 1)]],
+    categories: getRandomSubarray(categories),
     comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments),
     picture: `sea-fullsize@1x.jpg`
   }))
 );
 
 module.exports = {
-  name: `--generate`,
+  name: `--filldb`,
   async run(args) {
+    try {
+      logger.info(`Trying to connect to database...`);
+      await sequelize.authenticate();
+    } catch (err) {
+      logger.error(`An error occured: ${err.message}`);
+      process.exit(1);
+    }
+    logger.info(`Connection to database established`);
+
     const sentences = await readContent(paths.FILE_SENTENCES_PATH);
     const titles = await readContent(paths.FILE_TITLES_PATH);
     const categories = await readContent(paths.FILE_CATEGORIES_PATH);
     const comments = await readContent(paths.FILE_COMMENTS_PATH);
 
     const [count] = args;
-    const countOffer = Number.parseInt(count, 10);
-    if (countOffer > 1000) {
+    const countArticle = Number.parseInt(count, 10);
+    if (countArticle > 1000) {
       console.error(chalk.red(`Не больше 1000 публикаций`));
       process.exit(ExitCode.error);
     }
 
 
-    const content = JSON.stringify(generateOffers(countOffer, titles, categories, sentences, comments));
+    const articles = JSON.stringify(generateArticles(countArticle, titles, categories, sentences, comments));
 
-    try {
-      await fs.writeFile(FILE_NAME, content);
-      console.log(chalk.green(`Operation success. File created.`));
-    } catch (err) {
-      console.error(chalk.red(`Can't write data to file...`));
-      process.exit(ExitCode.error);
-    }
+    return initDatabase(sequelize, {articles, categories});
 
   }
 };
