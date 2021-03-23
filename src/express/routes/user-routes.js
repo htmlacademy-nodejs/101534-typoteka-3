@@ -9,7 +9,7 @@ userRouter.get(`/`, async (req, res) => {
   res.render(`admin/my`, {articles});
 });
 userRouter.get(`/comments`, async (req, res) => {
-  const articles = await api.getArticles();
+  const articles = await api.getArticles({comments: true});
 
 
   const commentArrays = await Promise.all([

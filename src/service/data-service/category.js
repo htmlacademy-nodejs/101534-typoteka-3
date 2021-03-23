@@ -1,17 +1,39 @@
 'use strict';
 
+const Sequelize = require(`sequelize`);
+
+
 class CategoryService {
-  constructor(offers) {
-    this._offers = offers;
+  constructor(sequelize) {
+    this._Category = sequelize.models.Category;
+    this._ArticleCategory = sequelize.models.ArticleCategory;
   }
 
-  findAll() {
-    const categories = this._offers.reduce((acc, offer) => {
-      offer.category.forEach((category) => acc.add(category));
-      return acc;
-    }, new Set());
-
-    return [...categories];
+  async findAll(needCount) {
+    if (needCount) {
+      const result = await this._Category.findAll({
+        attributes: [
+          `id`,
+          `name`,
+          [
+            Sequelize.fn(
+                `COUNT`,
+                `*`
+            ),
+            `count`
+          ]
+        ],
+        group: [Sequelize.col(`Category.id`)],
+        include: [{
+          model: this._ArticleCategory,
+          as: articleCategories,
+          attributes: []
+        }]
+      });
+      return result.map((it) => it.get());
+    } else {
+      return this._Category.findAll({raw: true});
+    }
   }
 }
 

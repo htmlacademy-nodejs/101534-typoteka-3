@@ -5,7 +5,7 @@ const chalk = require(`chalk`);
 const {nanoid} = require(`nanoid`);
 const sequelize = require(`../lib/sequelize`);
 const defineModels = require(`../models`);
-const {getLogger} = require(`../lib/logger`);
+const {logger, getLogger} = require(`../lib/logger`);
 const initDatabase = require(`../lib/init-db`);
 
 
@@ -65,7 +65,6 @@ const getFullText = (sentences) => {
 
 const generateComments = (count, comments) => (
   Array(count).fill({}).map(() => ({
-    id: nanoid(MAX_ID_LENGTH),
     text: shuffle(comments)
       .slice(0, getRandomInt(1, 3))
       .join(` `),
@@ -74,11 +73,10 @@ const generateComments = (count, comments) => (
 
 const generateArticles = (count, titles, categories, sentences, comments) => (
   Array(count || DEFAULT_COUNT).fill({}).map(() => ({
-    id: nanoid(MAX_ID_LENGTH),
     title: titles[getRandomInt(0, titles.length - 1)],
     createdDate: getRandomDate(3),
     announce: getAnnounceText(sentences),
-    fullText: getFullText(sentences),
+    text: getFullText(sentences),
     categories: getRandomSubarray(categories),
     comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments),
     picture: `sea-fullsize@1x.jpg`
@@ -103,7 +101,7 @@ module.exports = {
     const comments = await readContent(paths.FILE_COMMENTS_PATH);
 
     const [count] = args;
-    const countArticle = Number.parseInt(count, 10);
+    const countArticle = Number.parseInt(count, 10) || 3;
     if (countArticle > 1000) {
       console.error(chalk.red(`Не больше 1000 публикаций`));
       process.exit(ExitCode.error);
@@ -112,7 +110,7 @@ module.exports = {
 
     const articles = JSON.stringify(generateArticles(countArticle, titles, categories, sentences, comments));
 
-    return initDatabase(sequelize, {articles, categories});
+    return initDatabase(sequelize, categories, articles);
 
   }
 };

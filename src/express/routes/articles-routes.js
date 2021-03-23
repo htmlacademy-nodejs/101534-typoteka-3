@@ -36,7 +36,7 @@ articlesRouter.post(`/add`,
         title: body.title,
         announce: body.announcement,
         fullText: body[`full-text`],
-        category: `test`
+        categories: body.category
       };
 
       try {

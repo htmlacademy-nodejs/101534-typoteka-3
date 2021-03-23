@@ -2,7 +2,8 @@
 
 const defineModels = require(`../models`);
 
-module.exports = async (sequelize, {categories, articles}) => {
+module.exports = async (sequelize, categories, articles) => {
+
   const {Category, Article} = defineModels(sequelize);
   await sequelize.sync({force: true});
 
@@ -15,8 +16,9 @@ module.exports = async (sequelize, {categories, articles}) => {
     ...acc
   }), {});
 
-  const articlePromises = articles.map(async (article) => {
+  const articlePromises = (JSON.parse(articles)).map(async (article) => {
     const articleModel = await Article.create(article, {include: `comments`});
+    console.log( articleModel)
     await articleModel.addCategories(
         article.categories.map(
             (name) => categoryIdByName[name]

@@ -8,7 +8,7 @@ class Article extends Model {
 
 const define = (sequelize) => Article.init({
   text: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: false
   },
   picture: DataTypes.STRING,
