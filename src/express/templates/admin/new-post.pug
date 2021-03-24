@@ -39,5 +39,5 @@ block content
                       | #{articleData ? `${articleData.announce}` : ``}
                 .form__field.form__field--publication-text
                   label
-                    textarea(rows='10' name='full-text' placeholder='Полный текст публикации' value=(articleData ? `${articleData.fullText}` : ``))
-                      | #{articleData ? `${articleData.fullText}` : ``}
+                    textarea(rows='10' name='full-text' placeholder='Полный текст публикации' value=(articleData ? `${articleData.text}` : ``))
+                      | #{articleData ? `${articleData.text}` : ``}

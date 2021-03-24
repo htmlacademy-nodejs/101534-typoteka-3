@@ -2,11 +2,12 @@
 
 const {HttpCode} = require(`../../constants`);
 
-const offerKeys = [`category`, `fullText`, `title`, `createdDate`, `announce`];
+const offerKeys = [`text`, `title`, `createdDate`, `announce`];
 
 module.exports = (req, res, next) => {
   const newOffer = req.body;
   const keys = Object.keys(newOffer);
+
   const keysExists = offerKeys.every((key) => keys.includes(key));
 
   if (!keysExists) {

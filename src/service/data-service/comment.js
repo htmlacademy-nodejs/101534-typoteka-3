@@ -20,8 +20,8 @@ class CommentService {
     return !!deletedRows;
   }
 
-  findAll(articleId) {
-    return this._Comment.findAll({
+  async findAll(articleId) {
+    return await this._Comment.findAll({
       where: {articleId},
       raw: true
     });

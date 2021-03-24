@@ -21,7 +21,7 @@ class ArticleService {
   }
 
   async findAll(needComments) {
-    const include = `categories`;
+    const include = [`categories`];
     if (needComments) {
       include.push(`comments`);
     }
@@ -31,7 +31,7 @@ class ArticleService {
   }
 
   findOne(id, needComments) {
-    const include = `categories`;
+    const include = [`categories`];
     if (needComments) {
       include.push(`comments`);
     }

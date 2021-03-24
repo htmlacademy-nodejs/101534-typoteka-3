@@ -94,9 +94,9 @@ block content
         each article in articles
           li(class=(article.picture ? 'preview__item' : 'preview__item preview__item--noimage'))    
             ul.preview__breadcrumbs
-              each category in article.category
+              each category in article.categories
                 li.preview__breadcrumbs-item
-                  a.preview__breadcrumbs-link(href='#') #{category}
+                  a.preview__breadcrumbs-link(href='#') #{category.name}
             .preview__background
               img.preview__background-image(src=`img/${article.picture}` width='460' height='240')
             time.preview__time  #{article.createdDate}
@@ -104,10 +104,11 @@ block content
               a.preview__name-link(href='#') #{article.title}
             p.preview__text
               | #{article.announce}
-            a.preview__comment(href='#')
-              | Комментарии 
-              span.preview__cloud
-              b.preview__comment-count #{article.comments.length}
+            if article.comments
+              a.preview__comment(href='#')
+                | Комментарии 
+                span.preview__cloud
+                b.preview__comment-count #{article.comments.length}
     .preview__toggle-wrapper
       ul.preview__pagination.pagination
         li

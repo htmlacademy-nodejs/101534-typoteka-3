@@ -7,6 +7,10 @@ class Article extends Model {
 }
 
 const define = (sequelize) => Article.init({
+  announce: {
+    type: DataTypes.TEXT,
+    allowNull: false
+  },
   text: {
     type: DataTypes.TEXT,
     allowNull: false

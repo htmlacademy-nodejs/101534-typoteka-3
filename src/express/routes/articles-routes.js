@@ -35,14 +35,16 @@ articlesRouter.post(`/add`,
         createdDate: body.date,
         title: body.title,
         announce: body.announcement,
-        fullText: body[`full-text`],
+        text: body[`full-text`],
         categories: body.category
       };
 
       try {
+
         await api.createArticle(articleData);
         res.redirect(`/my`);
       } catch (e) {
+        console.log(e)
         res.render(`admin/new-post`, {articleData});
       }
     }
@@ -58,7 +60,12 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
 
   res.render(`user/post`, {article, comments});
 });
-articlesRouter.get(`/:id`, (req, res) => res.render(`user/post`));
+
+articlesRouter.get(`/:id`, async (req, res) => {
+  const {id} = req.params;
+  const article = await api.getArticle(id, true);
+  res.render(`user/post`, {article});
+});
 
 
 module.exports = articlesRouter;
