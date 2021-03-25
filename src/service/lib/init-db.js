@@ -2,13 +2,21 @@
 
 const defineModels = require(`../models`);
 
-module.exports = async (sequelize, categories, articles) => {
+module.exports = async (sequelize, categories, articles, users) => {
 
-  const {Category, Article} = defineModels(sequelize);
+  const {Category, Article, User} = defineModels(sequelize);
   await sequelize.sync({force: true});
 
   const categoryModels = await Category.bulkCreate(
       categories.map((item) => ({name: item}))
+  );
+  console.log(users)
+  const userModels = await User.bulkCreate(
+      users.map((item) => ({
+        email: item.email,
+        firstName: item.firstName,
+        lastName: item.lastName
+      }))
   );
 
   const categoryIdByName = categoryModels.reduce((acc, next) => ({
@@ -18,7 +26,6 @@ module.exports = async (sequelize, categories, articles) => {
 
   const articlePromises = (JSON.parse(articles)).map(async (article) => {
     const articleModel = await Article.create(article, {include: `comments`});
-    console.log( articleModel)
     await articleModel.addCategories(
         article.categories.map(
             (name) => categoryIdByName[name]

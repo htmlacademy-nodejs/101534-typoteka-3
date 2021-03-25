@@ -23,7 +23,18 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage});
 
-articlesRouter.get(`/category/:id`, (req, res) => res.send(`/articles/category/:id`));
+articlesRouter.get(`/category/:id`, async (req, res) => {
+  const {id} = req.params;
+  const articles = await api.getArticles();
+  const categories = await api.getCategories(true);
+  const name = categories.find((cat) => {return cat.id === +id}).name;
+  const categoryArticles = articles.filter((article) => {
+    return article.categories.some((cat) => {return cat.id === +id});
+  });
+  console.log(articles)
+  res.render(`user/articles-by-category`, {categoryArticles, categories, id, name});
+});
+
 articlesRouter.get(`/add`, (req, res) => res.render(`admin/new-post`));
 
 articlesRouter.post(`/add`,
@@ -44,7 +55,6 @@ articlesRouter.post(`/add`,
         await api.createArticle(articleData);
         res.redirect(`/my`);
       } catch (e) {
-        console.log(e)
         res.render(`admin/new-post`, {articleData});
       }
     }

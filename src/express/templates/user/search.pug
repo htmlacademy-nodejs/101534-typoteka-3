@@ -1,6 +1,11 @@
 extends ../layout.pug
 
 block content
+  -
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      return date.toLocaleString();
+    }
   main
     section.search-page
       div(class=results !== "нет совпадений" ? "search-page__wrapper" : "search-page__wrapper search-page__wrapper--empty")
@@ -15,6 +20,6 @@ block content
           else if results
             each result in results          
               .search__result
-                time.search__date(datetime='2019-03-21T20:33') #{result.createdDate}
-                a.search__link
+                time.search__date(datetime=`#{formatDate(result.createdAt)}`) #{formatDate(result.createdAt)}
+                a.search__link(href=`/articles/`+result.id)
                   | #{result.title}

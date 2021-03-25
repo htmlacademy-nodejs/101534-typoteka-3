@@ -17,7 +17,8 @@ const {
 const {
   ExitCode,
   MAX_ID_LENGTH,
-  paths
+  paths,
+  users
 } = require(`../../constants`);
 
 const FILE_NAME = `mocks.json`;
@@ -41,14 +42,14 @@ const getRandomDate = (months = 1) => {
   return createdDate;
 };
 
-const getRandomSubarray = (items) => {
+const getRandomSubarray = (items, maxCount) => {
   items = items.slice();
-  let count = getRandomInt(1, items.length - 1);
+  let count = getRandomInt(1, maxCount || items.length - 1);
   const result = [];
   while (count--) {
     result.push(
         ...items.splice(
-            getRandomInt(0, items.length - 1), 1
+            getRandomInt(0, maxCount || items.length - 1), 1
         )
     );
   }
@@ -63,23 +64,25 @@ const getFullText = (sentences) => {
   return shuffle(sentences).slice(1, getRandomInt(6, 10)).join(` `);
 };
 
-const generateComments = (count, comments) => (
+const generateComments = (count, userCount, comments) => (
   Array(count).fill({}).map(() => ({
+    userId: getRandomInt(1, userCount),
     text: shuffle(comments)
       .slice(0, getRandomInt(1, 3))
       .join(` `),
   }))
 );
 
-const generateArticles = (count, titles, categories, sentences, comments) => (
+const generateArticles = (count, titles, categories, sentences, comments, userCount) => (
   Array(count || DEFAULT_COUNT).fill({}).map(() => ({
     title: titles[getRandomInt(0, titles.length - 1)],
     createdDate: getRandomDate(3),
     announce: getAnnounceText(sentences),
     text: getFullText(sentences),
-    categories: getRandomSubarray(categories),
-    comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments),
-    picture: `sea-fullsize@1x.jpg`
+    categories: getRandomSubarray(categories, 4),
+    comments: generateComments(getRandomInt(1, MAX_COMMENTS), 3, comments),
+    picture: `sea-fullsize@1x.jpg`,
+    userId: getRandomInt(1, userCount)
   }))
 );
 
@@ -108,9 +111,9 @@ module.exports = {
     }
 
 
-    const articles = JSON.stringify(generateArticles(countArticle, titles, categories, sentences, comments));
+    const articles = JSON.stringify(generateArticles(countArticle, titles, categories, sentences, comments, 3));
 
-    return initDatabase(sequelize, categories, articles);
+    return initDatabase(sequelize, categories, articles, users);
 
   }
 };

@@ -51,3 +51,4 @@ CREATE TABLE article_categories(
 ALTER TABLE categories OWNER TO dagda25;
 ALTER TABLE articles OWNER TO dagda25;
 ALTER TABLE comments OWNER TO dagda25;
+ALTER TABLE users OWNER TO dagda25;

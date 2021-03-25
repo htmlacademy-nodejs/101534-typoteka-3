@@ -6,7 +6,8 @@ const api = require(`../api.js`).getAPI();
 
 mainRouter.get(`/`, async (req, res) => {
   const articles = await api.getArticles();
-  res.render(`main`, {articles});
+  const categories = await api.getCategories(true);
+  res.render(`main`, {articles, categories});
 });
 
 mainRouter.get(`/register`, (req, res) => res.render(`user/sign-up`));
@@ -30,7 +31,10 @@ mainRouter.get(`/search`,
         });
       }
     });
-mainRouter.get(`/categories`, (req, res) => res.render(`admin/all-categories`));
+mainRouter.get(`/categories`, async (req, res) => {
+  const categories = await api.getCategories(true);
+  res.render(`admin/all-categories`, {categories})
+});
 
 
 module.exports = mainRouter;

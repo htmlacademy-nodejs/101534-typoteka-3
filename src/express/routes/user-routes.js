@@ -11,7 +11,6 @@ userRouter.get(`/`, async (req, res) => {
 userRouter.get(`/comments`, async (req, res) => {
   const articles = await api.getArticles({comments: true});
 
-
   const commentArrays = await Promise.all([
     api.getComments(articles[0].id),
     api.getComments(articles[1].id),
@@ -19,8 +18,7 @@ userRouter.get(`/comments`, async (req, res) => {
   ]);
   const comments = [].concat(...commentArrays);
 
-  res.render(`admin/comments`, {comments});
+  res.render(`admin/comments`, {articles, comments});
 });
-
 
 module.exports = userRouter;
