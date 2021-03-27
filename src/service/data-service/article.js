@@ -1,4 +1,5 @@
 'use strict';
+const Sequelize = require(`sequelize`);
 
 class ArticleService {
   constructor(sequelize) {

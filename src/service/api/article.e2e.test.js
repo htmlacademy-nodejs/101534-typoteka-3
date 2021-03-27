@@ -2,140 +2,130 @@
 
 const express = require(`express`);
 const request = require(`supertest`);
+const Sequelize = require(`sequelize`);
+
+const initDB = require(`../lib/init-db`);
 
 const article = require(`./article`);
 const DataService = require(`../data-service/article`);
 const CommentService = require(`../data-service/comment`);
 const {HttpCode} = require(`../../constants`);
 
-const mockData = [
+const mockCategories = JSON.stringify([
+  `Программирование`,
+  `Путешествия`,
+  `Кино`,
+  `Музыка`
+]);
+
+const mockData = JSON.stringify([
   {
-    "id": `nBJ_f0`,
-    "title": `Что такое золотое сечение`,
-    "createdDate": `23.01.2021`,
-    "announce": `Альбом стал настоящим открытием года. Мощные гитарные рифы и скоростные соло-партии не дадут заскучать. Из под его пера вышло 8 платиновых альбомов.`,
-    "fullText": `Первая большая ёлка была установлена только в 1938 году. Сотрясение мозга – очень серьезно. Пора перестать восхищаться теми, кто возвращается в поле после травм головы. Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле? Это один из лучших рок-музыкантов. Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете. Золотое сечение — соотношение двух величин, гармоническая пропорция. Медведев сейчас так хорош, что обводит даже одноручным бэкхендом. Достичь успеха помогут ежедневные повторения.`,
-    "category": [
-      `Железо`
+    "title": `Финал на краю вселенной`,
+    "announce": `Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике. Сотрясение мозга – очень серьезно. Пора перестать восхищаться теми, кто возвращается в поле после травм головы. Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле? Вы можете достичь всего. Стоит только немного постараться и запастись книгами.`,
+    "text": `Собрать камни бесконечности легко, если вы прирожденный герой. Медведев сейчас так хорош, что обводит даже одноручным бэкхендом. Золотое сечение — соотношение двух величин, гармоническая пропорция. Первая большая ёлка была установлена только в 1938 году. Помните, небольшое количество ежедневных упражнений лучше, чем один раз, но много. Игры и программирование разные вещи. Не стоит идти в программисты, если вам нравятся только игры.`,
+    "categories": [
+      `Программирование`,
+      `Кино`
     ],
     "comments": [
       {
-        "id": `ObtvHr`,
-        "text": `Давно не пользуюсь стационарными компьютерами. Ноутбуки победили.`
-      },
-      {
-        "id": `uu9DQH`,
-        "text": `Мне кажется или я уже читал это где-то? Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Мне не нравится ваш стиль. Ощущение, что вы меня поучаете.`
-      },
-      {
-        "id": `bYAvBg`,
-        "text": `Это где ж такие красоты?`
+        "text": `Совсем немного... Согласен с автором!`
       }
     ],
     "picture": `Image.jpg`
   },
   {
-    "id": `ePlvy_`,
-    "title": `Биатлон в горах`,
-    "createdDate": `20.02.2021`,
-    "announce": `Из под его пера вышло 8 платиновых альбомов. Простые ежедневные упражнения помогут достичь успеха. Процессор заслуживает особого внимания. Он обязательно понравится геймерам со стажем. Достичь успеха помогут ежедневные повторения. Первая большая ёлка была установлена только в 1938 году.`,
-    "fullText": `Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле? Помните, небольшое количество ежедневных упражнений лучше, чем один раз, но много. Он написал больше 30 хитов. Собрать камни бесконечности легко, если вы прирожденный герой. Леброн пробежал половину площадки с мячом в руках и забил сверху. Разве это не пробежка? Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике. Простые ежедневные упражнения помогут достичь успеха. Это один из лучших рок-музыкантов. Игры и программирование разные вещи. Не стоит идти в программисты, если вам нравятся только игры.`,
-    "category": [
+    "title": `Главная гонка Америки`,
+    "announce": `Ёлки — это не просто красивое дерево. Это прочная древесина. Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле?`,
+    "text": `Медведев сейчас так хорош, что обводит даже одноручным бэкхендом. Собрать камни бесконечности легко, если вы прирожденный герой. Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике. Как начать действовать? Для начала просто соберитесь. Это один из лучших рок-музыкантов. Леброн пробежал половину площадки с мячом в руках и забил сверху. Разве это не пробежка?`,
+    "categories": [
       `Музыка`
     ],
     "comments": [
       {
-        "id": `m6hXLy`,
-        "text": `Согласен с автором! Совсем немного...`
-      }
-    ],
-    "picture": `Image.jpg`
-  },
-  {
-    "id": `R6i-7t`,
-    "title": `Учим HTML и CSS`,
-    "createdDate": `11.02.2021`,
-    "announce": `Золотое сечение — соотношение двух величин, гармоническая пропорция. Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете. Леброн пробежал половину площадки с мячом в руках и забил сверху. Разве это не пробежка?`,
-    "fullText": `Альбом стал настоящим открытием года. Мощные гитарные рифы и скоростные соло-партии не дадут заскучать. Первая большая ёлка была установлена только в 1938 году. Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле? Как начать действовать? Для начала просто соберитесь. Помните, небольшое количество ежедневных упражнений лучше, чем один раз, но много. Собрать камни бесконечности легко, если вы прирожденный герой. Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете.`,
-    "category": [
-      `Образование`
-    ],
-    "comments": [
-      {
-        "id": `H2Nfmj`,
-        "text": `Планируете записать видосик на эту тему?`
+        "text": `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Совсем немного... Мне кажется или я уже читал это где-то?`
       },
       {
-        "id": `tw6OBp`,
-        "text": `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Плюсую, но слишком много буквы! Хочу такую же футболку :-)`
+        "text": `Планируете записать видосик на эту тему? Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Совсем немного...`
       }
     ],
     "picture": `Image.jpg`
   },
   {
-    "id": `kcXzhK`,
-    "title": `Обзор новейшего смартфона`,
-    "createdDate": `06.01.2021`,
-    "announce": `Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике. Игры и программирование разные вещи. Не стоит идти в программисты, если вам нравятся только игры. Он написал больше 30 хитов.`,
-    "fullText": `Леброн пробежал половину площадки с мячом в руках и забил сверху. Разве это не пробежка? Как начать действовать? Для начала просто соберитесь. Это один из лучших рок-музыкантов. Программировать не настолько сложно, как об этом говорят. Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле? Первая большая ёлка была установлена только в 1938 году. Ёлки — это не просто красивое дерево. Это прочная древесина.`,
-    "category": [
+    "title": `Как собрать камни бесконечности`,
+    "announce": `Собрать камни бесконечности легко, если вы прирожденный герой. Он написал больше 30 хитов. Это один из лучших рок-музыкантов. Медведев сейчас так хорош, что обводит даже одноручным бэкхендом.`,
+    "text": `Это один из лучших рок-музыкантов. Игры и программирование разные вещи. Не стоит идти в программисты, если вам нравятся только игры. Ёлки — это не просто красивое дерево. Это прочная древесина. Бороться с прокрастинацией несложно. Просто действуйте. Маленькими шагами. Леброн пробежал половину площадки с мячом в руках и забил сверху. Разве это не пробежка?`,
+    "categories": [
       `Путешествия`
     ],
     "comments": [
       {
-        "id": `xmI2Nv`,
-        "text": `Планируете записать видосик на эту тему? Это где ж такие красоты? Согласен с автором!`
+        "text": `Плюсую, но слишком много буквы! Хочу такую же футболку :-) Мне кажется или я уже читал это где-то?`
+      },
+      {
+        "text": `Планируете записать видосик на эту тему? Это где ж такие красоты?`
+      },
+      {
+        "text": `Плюсую, но слишком много буквы! Давно не пользуюсь стационарными компьютерами. Ноутбуки победили.`
       }
     ],
     "picture": `Image.jpg`
   },
   {
-    "id": `sd7J-X`,
-    "title": `Учим HTML и CSS`,
-    "createdDate": `09.02.2021`,
-    "announce": `Собрать камни бесконечности легко, если вы прирожденный герой.`,
-    "fullText": `Первая большая ёлка была установлена только в 1938 году. Достичь успеха помогут ежедневные повторения. Как начать действовать? Для начала просто соберитесь. Ёлки — это не просто красивое дерево. Это прочная древесина. Помните, небольшое количество ежедневных упражнений лучше, чем один раз, но много. Это один из лучших рок-музыкантов. Простые ежедневные упражнения помогут достичь успеха. Процессор заслуживает особого внимания. Он обязательно понравится геймерам со стажем. Медведев сейчас так хорош, что обводит даже одноручным бэкхендом.`,
-    "category": [
-      `Спорт`
+    "title": `Бег, плавание или йога`,
+    "announce": `Альбом стал настоящим открытием года. Мощные гитарные рифы и скоростные соло-партии не дадут заскучать.`,
+    "text": `Бороться с прокрастинацией несложно. Просто действуйте. Маленькими шагами. Вы можете достичь всего. Стоит только немного постараться и запастись книгами. Медведев сейчас так хорош, что обводит даже одноручным бэкхендом. Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле? Первая большая ёлка была установлена только в 1938 году. Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете. Альбом стал настоящим открытием года. Мощные гитарные рифы и скоростные соло-партии не дадут заскучать. Игры и программирование разные вещи. Не стоит идти в программисты, если вам нравятся только игры. Сотрясение мозга – очень серьезно. Пора перестать восхищаться теми, кто возвращается в поле после травм головы.`,
+    "categories": [
+      `Программирование`
     ],
     "comments": [
       {
-        "id": `15m7jV`,
-        "text": `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Давно не пользуюсь стационарными компьютерами. Ноутбуки победили.`
+        "text": `Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Согласен с автором!`
       },
       {
-        "id": `hBobdr`,
-        "text": `Это где ж такие красоты? Мне кажется или я уже читал это где-то?`
+        "text": `Планируете записать видосик на эту тему? Плюсую, но слишком много буквы! Мне не нравится ваш стиль. Ощущение, что вы меня поучаете.`
+      }
+    ],
+    "picture": `Image.jpg`
+  },
+  {
+    "title": `Биатлон в горах`,
+    "announce": `Медведев сейчас так хорош, что обводит даже одноручным бэкхендом. Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике. Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете. Помните, небольшое количество ежедневных упражнений лучше, чем один раз, но много.`,
+    "text": `Достичь успеха помогут ежедневные повторения. Бороться с прокрастинацией несложно. Просто действуйте. Маленькими шагами. Альбом стал настоящим открытием года. Мощные гитарные рифы и скоростные соло-партии не дадут заскучать. Вы можете достичь всего. Стоит только немного постараться и запастись книгами. Как начать действовать? Для начала просто соберитесь. Медведев сейчас так хорош, что обводит даже одноручным бэкхендом.`,
+    "categories": [
+      `Кино`
+    ],
+    "comments": [
+      {
+        "text": `Плюсую, но слишком много буквы! Согласен с автором! Планируете записать видосик на эту тему?`
       },
       {
-        "id": `EHTDvf`,
-        "text": `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Хочу такую же футболку :-) Плюсую, но слишком много буквы!`
-      },
-      {
-        "id": `hDZaqN`,
-        "text": `Планируете записать видосик на эту тему?`
+        "text": `Это где ж такие красоты? Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Мне кажется или я уже читал это где-то?`
       }
     ],
     "picture": `Image.jpg`
   }
-];
+]);
 
-const createAPI = () => {
+const createAPI = async () => {
+  const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
+  await initDB(mockDB, mockCategories, mockData, []);
   const app = express();
   const cloneData = JSON.parse(JSON.stringify(mockData));
   app.use(express.json());
-  article(app, new DataService(cloneData), new CommentService());
+  article(app, new DataService(mockDB), new CommentService(mockDB));
   return app;
 };
 
 
 describe(`API returns a list of all articles`, () => {
 
-  const app = createAPI();
+  let app;
 
   let response;
 
   beforeAll(async () => {
+    app = await createAPI();
     response = await request(app)
       .get(`/articles`);
   });
@@ -144,24 +134,25 @@ describe(`API returns a list of all articles`, () => {
 
   test(`Returns a list of 5 articles`, () => expect(response.body.length).toBe(5));
 
-  test(`First article's id equals "nBJ_f0"`, () => expect(response.body[0].id).toBe(`nBJ_f0`));
+  test(`First article's title equals "Финал на краю вселенной"`, () => expect(response.body[0].title).toBe(`Финал на краю вселенной`));
 
 });
 
 describe(`API returns an article with given id`, () => {
 
-  const app = createAPI();
+  let app;
 
   let response;
 
   beforeAll(async () => {
+    app = await createAPI();
     response = await request(app)
-      .get(`/articles/nBJ_f0`);
+      .get(`/articles/1`);
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-  test(`Article's title is "Что такое золотое сечение"`, () => expect(response.body.title).toBe(`Что такое золотое сечение`));
+  test(`Article's title is "Финал на краю вселенной"`, () => expect(response.body.title).toBe(`Финал на краю вселенной`));
 
 });
 
@@ -171,17 +162,18 @@ describe(`API creates an article if data is valid`, () => {
     "title": `Новая статья`,
     "createdDate": `18.02.2021`,
     "announce": `Новая статья`,
-    "fullText": `Новая статья`,
-    "category": [
+    "text": `Новая статья`,
+    "categories": [
       `Кино`
     ],
     "comments": [],
     "picture": `Image.jpg`
   };
-  const app = createAPI();
+  let app;
   let response;
 
   beforeAll(async () => {
+    app = await createAPI();
     response = await request(app)
       .post(`/articles`)
       .send(newArticle);
@@ -189,9 +181,6 @@ describe(`API creates an article if data is valid`, () => {
 
 
   test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
-
-
-  test(`Returns article created`, () => expect(response.body).toEqual(expect.objectContaining(newArticle)));
 
   test(`Articles count is changed`, () => request(app)
     .get(`/articles`)
@@ -206,13 +195,13 @@ describe(`API refuses to create an article if data is invalid`, () => {
     "title": `Новая статья`,
     "createdDate": `18.02.2021`,
     "announce": `Новая статья`,
-    "fullText": `Новая статья`,
     "picture": `Image.jpg`,
     "comments": []
   };
-  const app = createAPI();
+  let app;
 
   test(`Without any required property response code is 400`, async () => {
+    app = await createAPI();
     for (const key of Object.keys(newArticle)) {
       const badOffer = {...newArticle};
       delete badOffer[key];
@@ -231,36 +220,35 @@ describe(`API changes existent article`, () => {
     "title": `Измененная статья`,
     "createdDate": `18.02.2021`,
     "announce": `Новая статья`,
-    "fullText": `Новая статья`,
+    "text": `Новая статья`,
     "category": [
       `Кино`
     ],
     "picture": `Image.jpg`,
     "comments": []
   };
-  const app = createAPI();
+  let app;
   let response;
 
   beforeAll(async () => {
+    app = await createAPI();
     response = await request(app)
-      .put(`/articles/sd7J-X`)
+      .put(`/articles/1`)
       .send(newArticle);
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-  test(`Returns changed Article`, () => expect(response.body).toEqual(expect.objectContaining(newArticle)));
-
   test(`Article is really changed`, () => request(app)
-    .get(`/articles/sd7J-X`)
+    .get(`/articles/1`)
     .expect((res) => expect(res.body.title).toBe(`Измененная статья`))
   );
 
 });
 
-test(`API returns status code 404 when trying to change non-existent article`, () => {
+test(`API returns status code 404 when trying to change non-existent article`, async () => {
 
-  const app = createAPI();
+  const app = await createAPI();
 
   const validArticle = {
     "title": `Измененная статья`,
@@ -280,9 +268,9 @@ test(`API returns status code 404 when trying to change non-existent article`, (
     .expect(HttpCode.NOT_FOUND);
 });
 
-test(`API returns status code 400 when trying to change an article with invalid data`, () => {
+test(`API returns status code 400 when trying to change an article with invalid data`, async () => {
 
-  const app = createAPI();
+  const app = await createAPI();
 
   const invalidArticle = {
     "title": `Измененная статья`,
@@ -302,31 +290,32 @@ test(`API returns status code 400 when trying to change an article with invalid 
 
 describe(`API correctly deletes an article`, () => {
 
-  const app = createAPI();
+  let app;
 
   let response;
 
   beforeAll(async () => {
+    app = await createAPI();
     response = await request(app)
-      .delete(`/articles/R6i-7t`);
+      .delete(`/articles/2`);
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-  test(`Returns deleted article`, () => expect(response.body.id).toBe(`R6i-7t`));
+  test(`Returns deleted article`, () => expect(response.body.title).toBe(`Главная гонка Америки`));
 
-  test(`Article count is 5 now`, () => request(app)
+  test(`Article count is 4 now`, () => request(app)
     .get(`/articles`)
     .expect((res) => {
-      expect(res.body.length).toBe(5);
+      expect(res.body.length).toBe(4);
     })
   );
 
 });
 
-test(`API refuses to delete non-existent article`, () => {
+test(`API refuses to delete non-existent article`, async () => {
 
-  const app = createAPI();
+  const app = await createAPI();
 
   return request(app)
     .delete(`/articles/NOEXST`)
@@ -336,20 +325,21 @@ test(`API refuses to delete non-existent article`, () => {
 
 describe(`API returns a list of comments to given article`, () => {
 
-  const app = createAPI();
+  let app;
 
   let response;
 
   beforeAll(async () => {
+    app = await createAPI();
     response = await request(app)
-      .get(`/articles/nBJ_f0/comments`);
+      .get(`/articles/1/comments`);
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-  test(`Returns list of 3 comments`, () => expect(response.body.length).toBe(3));
+  test(`Returns list of 1 comments`, () => expect(response.body.length).toBe(1));
 
-  test(`First comment's id is "ObtvHr"`, () => expect(response.body[0].id).toBe(`ObtvHr`));
+  test(`First comment's id is "Совсем немного... Согласен с автором!"`, () => expect(response.body[0].text).toBe(`Совсем немного... Согласен с автором!`));
 
 });
 
@@ -359,31 +349,29 @@ describe(`API creates a comment if data is valid`, () => {
   const newComment = {
     text: `Валидному комментарию достаточно этого поля`
   };
-  const app = createAPI();
+  let app;
   let response;
 
   beforeAll(async () => {
+    app = await createAPI();
     response = await request(app)
-      .post(`/articles/nBJ_f0/comments`)
+      .post(`/articles/1/comments`)
       .send(newComment);
   });
 
 
   test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
 
-
-  test(`Returns comment created`, () => expect(response.body).toEqual(expect.objectContaining(newComment)));
-
   test(`Comments count is changed`, () => request(app)
-    .get(`/articles/nBJ_f0/comments`)
-    .expect((res) => expect(res.body.length).toBe(4))
+    .get(`/articles/1/comments`)
+    .expect((res) => expect(res.body.length).toBe(2))
   );
 
 });
 
-test(`API refuses to create a comment to non-existent article and returns status code 404`, () => {
+test(`API refuses to create a comment to non-existent article and returns status code 404`, async () => {
 
-  const app = createAPI();
+  const app = await createAPI();
 
   return request(app)
     .post(`/articles/NOEXST/comments`)
@@ -394,12 +382,11 @@ test(`API refuses to create a comment to non-existent article and returns status
 
 });
 
-test(`API refuses to create a comment when data is invalid, and returns status code 400`, () => {
-
-  const app = createAPI();
+test(`API refuses to create a comment when data is invalid, and returns status code 400`, async() => {
+  const app = await createAPI();
 
   return request(app)
-    .post(`/articles/nBJ_f0/comments`)
+    .post(`/articles/1/comments`)
     .send({})
     .expect(HttpCode.BAD_REQUEST);
 
@@ -407,42 +394,43 @@ test(`API refuses to create a comment when data is invalid, and returns status c
 
 describe(`API correctly deletes a comment`, () => {
 
-  const app = createAPI();
+  let app;
 
   let response;
 
   beforeAll(async () => {
+    app = await createAPI();
     response = await request(app)
-      .delete(`/articles/nBJ_f0/comments/ObtvHr`);
+      .delete(`/articles/1/comments/1`);
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-  test(`Returns comment deleted`, () => expect(response.body.id).toBe(`ObtvHr`));
+  test(`Returns comment deleted`, () => expect(response.body.id).toBe(`1`));
 
-  test(`Comments count is 2 now`, () => request(app)
-    .get(`/articles/nBJ_f0/comments`)
-    .expect((res) => expect(res.body.length).toBe(3))
+  test(`Comments count is 0 now`, () => request(app)
+    .get(`/articles/1/comments`)
+    .expect((res) => expect(res.body.length).toBe(0))
   );
 
 });
 
-test(`API refuses to delete non-existent comment`, () => {
+test(`API refuses to delete non-existent comment`, async () => {
 
-  const app = createAPI();
+  const app = await createAPI();
 
   return request(app)
-    .delete(`/articles/nBJ_f0/comments/NOEXST`)
+    .delete(`/articles/1/comments/NOEXST`)
     .expect(HttpCode.NOT_FOUND);
 
 });
 
-test(`API refuses to delete a comment to non-existent article`, () => {
+test(`API refuses to delete a comment to non-existent article`, async () => {
 
-  const app = createAPI();
+  const app = await createAPI();
 
   return request(app)
-    .delete(`/articles/NOEXST/comments/m6hXLy`)
+    .delete(`/articles/NOEXST/comments/1`)
     .expect(HttpCode.NOT_FOUND);
 
 });

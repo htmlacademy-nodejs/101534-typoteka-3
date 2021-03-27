@@ -18,7 +18,8 @@ module.exports = (app, articleService, commentService) => {
 
   route.get(`/:articleId`, async (req, res) => {
     const {articleId} = req.params;
-    const article = await articleService.findOne(articleId, true);
+    const {comments} = req.query;
+    const article = await articleService.findOne(articleId, comments);
 
     if (!article) {
       return res.status(HttpCode.NOT_FOUND)
@@ -38,9 +39,9 @@ module.exports = (app, articleService, commentService) => {
 
   route.put(`/:articleId`, articleValidator, async (req, res) => {
     const {articleId} = req.params;
-    const existArticle = await articleService.findOne(articleId);
+    const updated = await articleService.update(articleId, req.body);
 
-    if (!existArticle) {
+    if (!updated) {
       return res.status(HttpCode.NOT_FOUND)
         .send(`Not found with ${articleId}`);
     }
@@ -65,7 +66,7 @@ module.exports = (app, articleService, commentService) => {
   });
 
   route.get(`/:articleId/comments`, articleExist(articleService), async (req, res) => {
-    const {articleId} = await req.params;
+    const {articleId} = req.params;
     const comments = await commentService.findAll(articleId);
 
     res.status(HttpCode.OK)
@@ -74,9 +75,8 @@ module.exports = (app, articleService, commentService) => {
   });
 
   route.delete(`/:articleId/comments/:commentId`, articleExist(articleService), async (req, res) => {
-    const {article} = res.locals;
     const {commentId} = req.params;
-    const deletedComment = await commentService.drop(article, commentId);
+    const deletedComment = await commentService.drop(commentId);
 
     if (!deletedComment) {
       return res.status(HttpCode.NOT_FOUND)
