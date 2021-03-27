@@ -18,8 +18,7 @@ module.exports = (app, articleService, commentService) => {
 
   route.get(`/:articleId`, async (req, res) => {
     const {articleId} = req.params;
-    const {comments} = req.query;
-    const article = await articleService.findOne(articleId, comments);
+    const article = await articleService.findOne(articleId, true);
 
     if (!article) {
       return res.status(HttpCode.NOT_FOUND)
@@ -89,7 +88,7 @@ module.exports = (app, articleService, commentService) => {
 
   route.post(`/:articleId/comments`, [articleExist(articleService), commentValidator], async (req, res) => {
     const {article} = res.locals;
-    const comment = commentService.create(article, req.body);
+    const comment = await commentService.create(article, req.body);
 
     return res.status(HttpCode.CREATED)
       .json(comment);

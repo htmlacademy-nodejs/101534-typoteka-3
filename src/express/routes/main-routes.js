@@ -33,7 +33,7 @@ mainRouter.get(`/search`,
     });
 mainRouter.get(`/categories`, async (req, res) => {
   const categories = await api.getCategories(true);
-  res.render(`admin/all-categories`, {categories})
+  res.render(`admin/all-categories`, {categories});
 });
 
 

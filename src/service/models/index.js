@@ -24,10 +24,7 @@ const define = (sequelize) => {
   User.hasMany(Comment, {as: `comments`, foreignKey: `userId`});
   Comment.belongsTo(User, {foreignKey: `userId`});
 
-
-
   ArticleCategory.init({}, {sequelize});
-
   Article.belongsToMany(Category, {through: ArticleCategory, as: `categories`});
   Category.belongsToMany(Article, {through: ArticleCategory, as: `articles`});
   Category.hasMany(ArticleCategory, {as: `articleСategories`});

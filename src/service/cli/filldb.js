@@ -2,10 +2,8 @@
 
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
-const {nanoid} = require(`nanoid`);
 const sequelize = require(`../lib/sequelize`);
-const defineModels = require(`../models`);
-const {logger, getLogger} = require(`../lib/logger`);
+const {logger} = require(`../lib/logger`);
 const initDatabase = require(`../lib/init-db`);
 
 
@@ -16,12 +14,10 @@ const {
 
 const {
   ExitCode,
-  MAX_ID_LENGTH,
   paths,
   users
 } = require(`../../constants`);
 
-const FILE_NAME = `mocks.json`;
 const DEFAULT_COUNT = 1;
 const MAX_COMMENTS = 4;
 

@@ -27,11 +27,15 @@ articlesRouter.get(`/category/:id`, async (req, res) => {
   const {id} = req.params;
   const articles = await api.getArticles();
   const categories = await api.getCategories(true);
-  const name = categories.find((cat) => {return cat.id === +id}).name;
+  const name = categories.find((cat) => {
+    return cat.id === +id;
+  }).name;
   const categoryArticles = articles.filter((article) => {
-    return article.categories.some((cat) => {return cat.id === +id});
+    return article.categories.some((cat) => {
+      return cat.id === +id;
+    });
   });
-  console.log(articles)
+  console.log(articles);
   res.render(`user/articles-by-category`, {categoryArticles, categories, id, name});
 });
 

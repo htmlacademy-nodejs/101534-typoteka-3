@@ -160,13 +160,8 @@ describe(`API creates an article if data is valid`, () => {
 
   const newArticle = {
     "title": `Новая статья`,
-    "createdDate": `18.02.2021`,
     "announce": `Новая статья`,
     "text": `Новая статья`,
-    "categories": [
-      `Кино`
-    ],
-    "comments": [],
     "picture": `Image.jpg`
   };
   let app;
@@ -302,7 +297,7 @@ describe(`API correctly deletes an article`, () => {
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-  test(`Returns deleted article`, () => expect(response.body.title).toBe(`Главная гонка Америки`));
+  test(`Returns deleted article`, () => expect(response.body).toBe(true));
 
   test(`Article count is 4 now`, () => request(app)
     .get(`/articles`)
@@ -406,7 +401,7 @@ describe(`API correctly deletes a comment`, () => {
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-  test(`Returns comment deleted`, () => expect(response.body.id).toBe(`1`));
+  test(`Returns comment deleted`, () => expect(response.body).toBe(true));
 
   test(`Comments count is 0 now`, () => request(app)
     .get(`/articles/1/comments`)

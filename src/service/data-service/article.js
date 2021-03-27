@@ -1,5 +1,4 @@
 'use strict';
-const Sequelize = require(`sequelize`);
 
 class ArticleService {
   constructor(sequelize) {
@@ -31,12 +30,13 @@ class ArticleService {
     return articles.map((item) => item.get());
   }
 
-  findOne(id, needComments) {
+  async findOne(id, needComments) {
     const include = [`categories`];
     if (needComments) {
       include.push(`comments`);
     }
-    return this._Article.findByPk(id, {include});
+    const result = await this._Article.findByPk(id, {include});
+    return result;
   }
 
   async update(id, article) {
