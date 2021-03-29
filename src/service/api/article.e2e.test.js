@@ -11,12 +11,12 @@ const DataService = require(`../data-service/article`);
 const CommentService = require(`../data-service/comment`);
 const {HttpCode} = require(`../../constants`);
 
-const mockCategories = JSON.stringify([
+const mockCategories = [
   `Программирование`,
   `Путешествия`,
   `Кино`,
   `Музыка`
-]);
+];
 
 const mockData = JSON.stringify([
   {

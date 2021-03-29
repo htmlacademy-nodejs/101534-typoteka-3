@@ -6,7 +6,7 @@ const defineComment = require(`./comment`);
 const defineArticle = require(`./article`);
 const defineUser = require(`./user`);
 
-class ArticleCategory extends Model {
+class articleCategory extends Model {
 
 }
 
@@ -24,12 +24,12 @@ const define = (sequelize) => {
   User.hasMany(Comment, {as: `comments`, foreignKey: `userId`});
   Comment.belongsTo(User, {foreignKey: `userId`});
 
-  ArticleCategory.init({}, {sequelize});
-  Article.belongsToMany(Category, {through: ArticleCategory, as: `categories`});
-  Category.belongsToMany(Article, {through: ArticleCategory, as: `articles`});
-  Category.hasMany(ArticleCategory, {as: `articleСategories`});
+  articleCategory.init({}, {sequelize});
+  Article.belongsToMany(Category, {through: articleCategory, as: `categories`});
+  Category.belongsToMany(Article, {through: articleCategory, as: `articles`});
+  Category.hasMany(articleCategory, {as: `articleСategories`});
 
-  return {Category, Comment, Article, ArticleCategory, User};
+  return {Category, Comment, Article, articleCategory, User};
 };
 
 module.exports = define;
