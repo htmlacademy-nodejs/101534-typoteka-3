@@ -30,6 +30,16 @@ class ArticleService {
     return articles.map((item) => item.get());
   }
 
+  async findPage({limit, offset}) {
+    const {count, rows} = await this._Article.findAndCountAll({
+      limit,
+      offset,
+      include: [`categories`, `comments`],
+      distinct: true
+    });
+    return {count, articles: rows};
+  }
+
   async findOne(id, needComments) {
     const include = [`categories`];
     if (needComments) {

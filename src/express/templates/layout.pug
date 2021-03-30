@@ -12,6 +12,33 @@ html(lang='ru')
     link(rel='preload' href='./fonts/SFProDisplay-Regular.woff2' as='font' crossorigin='anonymous')
     link(rel='stylesheet' href='css/style.min.css')
   body
+    mixin pagination(page, totalPages, width, prefix)
+      -
+        let start = page - width;
+        let end = page + width;
+        if(start < 1){
+          end += 1 - start;
+          start = 1;
+        }
+        if(end > totalPages){
+          start -= end - totalPages;
+          end = totalPages;
+        }
+        if(start < 1){
+          start = 1;
+        }
+        let i = start - 1
+      .preview__toggle-wrapper 
+        ul.preview__pagination.pagination
+          if page > 1
+            li
+              a(href=`${prefix}page=${page - 1}` class=`pagination__button button button--backwards`) Назад
+          while i++ < end
+            li(class=(i !== page ? `pagination__item` : `pagination__item pagination__item--active`))
+              a(href=(i !== page ? `${prefix}page=${i}` : null))= i
+          if page < totalPages
+            li
+              a(href=`${prefix}page=${page + 1}` class=`pagination__button button button--forward`) Вперёд
     .wrapper
       include partials/header.pug
       block content

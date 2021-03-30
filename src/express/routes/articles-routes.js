@@ -35,7 +35,6 @@ articlesRouter.get(`/category/:id`, async (req, res) => {
       return cat.id === +id;
     });
   });
-  console.log(articles);
   res.render(`user/articles-by-category`, {categoryArticles, categories, id, name});
 });
 

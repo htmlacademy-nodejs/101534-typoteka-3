@@ -4,10 +4,20 @@ const {Router} = require(`express`);
 const mainRouter = new Router();
 const api = require(`../api.js`).getAPI();
 
+const ARTICLES_PER_PAGE = 8;
+
 mainRouter.get(`/`, async (req, res) => {
-  const articles = await api.getArticles();
+  let {page = 1} = req.query;
+  page = +page;
+  const limit = ARTICLES_PER_PAGE;
+  const offset = (page - 1) * ARTICLES_PER_PAGE;
+
+
+  const {count, articles} = await api.getArticles({limit, offset});
   const categories = await api.getCategories(true);
-  res.render(`main`, {articles, categories});
+
+  const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
+  res.render(`main`, {articles, page, totalPages, categories});
 });
 
 mainRouter.get(`/register`, (req, res) => res.render(`user/sign-up`));
