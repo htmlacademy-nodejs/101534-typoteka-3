@@ -8,6 +8,8 @@ const multer = require(`multer`);
 const path = require(`path`);
 const {nanoid} = require(`nanoid`);
 
+const ARTICLES_PER_PAGE = 8;
+
 const UPLOAD_DIR = `../upload/img/`;
 
 const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
@@ -24,6 +26,11 @@ const storage = multer.diskStorage({
 const upload = multer({storage});
 
 articlesRouter.get(`/category/:id`, async (req, res) => {
+  let {page = 1} = req.query;
+  page = +page;
+  const limit = ARTICLES_PER_PAGE;
+  const offset = (page - 1) * ARTICLES_PER_PAGE;
+
   const {id} = req.params;
   const articles = await api.getArticles();
   const categories = await api.getCategories(true);
@@ -35,7 +42,9 @@ articlesRouter.get(`/category/:id`, async (req, res) => {
       return cat.id === +id;
     });
   });
-  res.render(`user/articles-by-category`, {categoryArticles, categories, id, name});
+  const totalPages = Math.ceil(categoryArticles.length / ARTICLES_PER_PAGE);
+  const artilclesByPage = categoryArticles.slice(offset, offset + limit);
+  res.render(`user/articles-by-category`, {artilclesByPage, categories, id, name, page, totalPages});
 });
 
 articlesRouter.get(`/add`, (req, res) => res.render(`admin/new-post`));
