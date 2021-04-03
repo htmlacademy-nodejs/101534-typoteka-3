@@ -43,8 +43,8 @@ articlesRouter.get(`/category/:id`, async (req, res) => {
     });
   });
   const totalPages = Math.ceil(categoryArticles.length / ARTICLES_PER_PAGE);
-  const artilclesByPage = categoryArticles.slice(offset, offset + limit);
-  res.render(`user/articles-by-category`, {artilclesByPage, categories, id, name, page, totalPages});
+  const articlesByPage = categoryArticles.slice(offset, offset + limit);
+  res.render(`user/articles-by-category`, {articlesByPage, categories, id, name, page, totalPages});
 });
 
 articlesRouter.get(`/add`, (req, res) => res.render(`admin/new-post`));
