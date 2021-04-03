@@ -6,7 +6,7 @@ const Sequelize = require(`sequelize`);
 class CategoryService {
   constructor(sequelize) {
     this._Category = sequelize.models.Category;
-    this._ArticleCategory = sequelize.models.articleCategory;
+    this._ArticleCategory = sequelize.models.ArticleCategory;
   }
 
   async findAll(needCount) {
@@ -26,7 +26,7 @@ class CategoryService {
         group: [Sequelize.col(`Category.id`)],
         include: [{
           model: this._ArticleCategory,
-          as: `articleСategories`,
+          as: `article_categories`,
           attributes: []
         }]
       });
