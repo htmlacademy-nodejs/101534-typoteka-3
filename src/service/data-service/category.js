@@ -2,7 +2,6 @@
 
 const Sequelize = require(`sequelize`);
 
-
 class CategoryService {
   constructor(sequelize) {
     this._Category = sequelize.models.Category;
@@ -15,13 +14,7 @@ class CategoryService {
         attributes: [
           `id`,
           `name`,
-          [
-            Sequelize.fn(
-                `COUNT`,
-                `*`
-            ),
-            `count`
-          ]
+          [Sequelize.fn(`COUNT`, Sequelize.col(`article_categories`, `CategoryId`)), `count`]
         ],
         group: [Sequelize.col(`Category.id`)],
         include: [{
