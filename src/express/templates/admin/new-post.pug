@@ -5,7 +5,7 @@ block content
     section
       .popup.popup--new-publication.popup--anti
         .new-publication
-          form(action='/articles/add' method='POST' enctype='multipart/form-data')
+          form(action=(route ? route : '/articles/add') method='POST' enctype='multipart/form-data')
             .new-publication__header
               h1 Новая публикация
               .new-publication__date-form
@@ -18,6 +18,12 @@ block content
             a.popup__button.button.button--popup-close(aria-label='Закрыть окно')
               | Закрыть
               | окно
+            if errorMessages           
+              .form__validation-error
+                p.form__error-message При регистрации произошли ошибки:
+                ul.form__errors
+                  each error in errorMessages
+                    li.form__error #{error}
             .new-publication__form.form
               .form__wrapper.form__wrapper--intro
                 .form__field
@@ -31,6 +37,11 @@ block content
                       input.visually-hidden(type='file' name='photo' required='true')
                       | Обзор
                 .new-publication__category-wrapper
+                  if articleData && articleData.categories
+                    each category in articleData.categories
+                      .new-publication__checkbox.new-publication__checkbox--auto
+                        input(type='checkbox' name=category.name id=category.id checked)
+                        label(for=category.id) #{category.name}
                   a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
               .form__wrapper.form__wrapper--text
                 .form__field.form__field--publication-text

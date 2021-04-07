@@ -47,6 +47,20 @@ class API {
       data
     });
   }
+
+  async createComment(id, commentData) {
+    return this._load(`/articles/${id}/comments`, {
+      method: `POST`,
+      data: commentData
+    });
+  }
+
+  async updateArticle(id, data) {
+    return this._load(`/articles/${id}`, {
+      method: `PUT`,
+      data
+    });
+  }
 }
 
 const defaultAPI = new API(defaultURL, TIMEOUT);

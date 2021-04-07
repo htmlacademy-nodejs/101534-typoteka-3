@@ -67,7 +67,8 @@ articlesRouter.post(`/add`,
         await api.createArticle(articleData);
         res.redirect(`/my`);
       } catch (e) {
-        res.render(`admin/new-post`, {articleData});
+        const errorMessages = e.response.data.message;
+        res.render(`admin/new-post`, {articleData, errorMessages});
       }
     }
 );
@@ -75,12 +76,37 @@ articlesRouter.post(`/add`,
 articlesRouter.get(`/edit/:id`, async (req, res) => {
   const {id} = req.params;
 
-  const [article, comments] = await Promise.all([
+  const [articleData, comments] = await Promise.all([
     api.getArticle(id),
     api.getComments(id)
   ]);
+  const route = `articles/edit/${id}`;
 
-  res.render(`user/post`, {article, comments});
+  res.render(`admin/new-post`, {articleData, comments, route});
+});
+
+articlesRouter.post(`/edit/:id`, upload.single(`photo`), async (req, res) => {
+  const {id} = req.params;
+
+  const {body, file} = req;
+  const articleData = {
+    picture: file.filename,
+    createdDate: body.date,
+    title: body.title,
+    announce: body.announcement,
+    text: body[`full-text`],
+    categories: body.categories
+  };
+
+  try {
+
+    await api.updateArticle(id, articleData);
+    res.redirect(`/my`);
+  } catch (e) {
+    const errorMessages = e.response.data.message;
+    res.render(`admin/new-post`, {articleData, errorMessages});
+  }
+
 });
 
 articlesRouter.get(`/:id`, async (req, res) => {
@@ -89,5 +115,23 @@ articlesRouter.get(`/:id`, async (req, res) => {
   res.render(`user/post`, {article});
 });
 
+articlesRouter.post(`/:id/comments`, upload.single(`photo`), async (req, res) => {
+  const {id} = req.params;
+
+  const {body} = req;
+  const commentData = {
+    text: body.text
+  };
+
+  try {
+
+    await api.createComment(id, commentData);
+    res.redirect(`/my`);
+  } catch (e) {
+    const errorMessages = e.response.data.message;
+    res.render(`admin/new-post`, {commentData, errorMessages});
+  }
+
+});
 
 module.exports = articlesRouter;
