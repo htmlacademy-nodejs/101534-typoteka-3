@@ -111,8 +111,14 @@ articlesRouter.post(`/edit/:id`, upload.single(`photo`), async (req, res) => {
 
 articlesRouter.get(`/:id`, async (req, res) => {
   const {id} = req.params;
-  const article = await api.getArticle(id, true);
-  res.render(`user/post`, {article});
+  try {
+    const article = await api.getArticle(id, true);
+    res.render(`user/post`, {article});
+  } catch (err) {
+    console.log(err.response.status);
+    res.status(400).render(`errors/404`);
+  }
+
 });
 
 articlesRouter.post(`/:id/comments`, upload.single(`photo`), async (req, res) => {
@@ -126,10 +132,11 @@ articlesRouter.post(`/:id/comments`, upload.single(`photo`), async (req, res) =>
   try {
 
     await api.createComment(id, commentData);
-    res.redirect(`/my`);
+    res.redirect(`/articles/${id}`);
   } catch (e) {
     const errorMessages = e.response.data.message;
-    res.render(`admin/new-post`, {commentData, errorMessages});
+    const article = await api.getArticle(id, true);
+    res.render(`user/post`, {article, errorMessages});
   }
 
 });

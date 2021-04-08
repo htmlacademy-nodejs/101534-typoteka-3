@@ -12,6 +12,21 @@ html(lang='ru')
     link(rel='preload' href='./fonts/SFProDisplay-Regular.woff2' as='font' crossorigin='anonymous')
     link(rel='stylesheet' href='css/style.min.css')
   body
+    mixin errorMessage(errors, field)
+      - 
+        const showError = (array, field) => {
+          const errors = array.filter((el) => {
+            return Object.keys(el)[0] === field;
+          });
+          return errors.map((el) => {
+            return Object.values(el)[0];
+          })
+
+        }
+      if showError(errors, field)
+        each error in showError(errors, field)
+          .form__validation-error
+            p.form__error-message #{error}
     mixin pagination(page, totalPages, width, prefix)
       -
         let start = page - width;

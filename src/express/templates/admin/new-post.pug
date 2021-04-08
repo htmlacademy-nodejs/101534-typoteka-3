@@ -1,6 +1,16 @@
 extends ../layout.pug
 
 block content
+  -
+    const showError = (array, field) => {
+      const errors = array.filter((el) => {
+        return Object.keys(el)[0] === field;
+      });
+      return errors.map((el) => {
+        return Object.values(el)[0];
+      })
+
+    }
   main
     section
       .popup.popup--new-publication.popup--anti
@@ -18,18 +28,14 @@ block content
             a.popup__button.button.button--popup-close(aria-label='Закрыть окно')
               | Закрыть
               | окно
-            if errorMessages           
-              .form__validation-error
-                p.form__error-message При регистрации произошли ошибки:
-                ul.form__errors
-                  each error in errorMessages
-                    li.form__error #{error}
             .new-publication__form.form
               .form__wrapper.form__wrapper--intro
                 .form__field
+                  +errorMessage(errorMessages, 'title')
                   label
                     input(type='text' name='title' placeholder='Заголовок' required='' value=(articleData ? `${articleData.title}` : ``))
                 .form__field.form__field--post-image
+                  +errorMessage(errorMessages, 'picture')
                   label
                     input#image-name-field(type='text' name='photo-name' placeholder='Фотография' readonly='')
                   .form__image-loader.form__image-loader--publication
@@ -37,6 +43,7 @@ block content
                       input.visually-hidden(type='file' name='photo' required='true')
                       | Обзор
                 .new-publication__category-wrapper
+                  +errorMessage(errorMessages, 'categories')
                   if articleData && articleData.categories
                     each category in articleData.categories
                       .new-publication__checkbox.new-publication__checkbox--auto
@@ -45,10 +52,18 @@ block content
                   a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
               .form__wrapper.form__wrapper--text
                 .form__field.form__field--publication-text
+                  +errorMessage(errorMessages, 'announce')
                   label
                     textarea(rows='5' name='announcement' placeholder='Анонс публикации' value=(articleData ? `${articleData.announce}` : ``))
                       | #{articleData ? `${articleData.announce}` : ``}
                 .form__field.form__field--publication-text
+                  +errorMessage(errorMessages, 'text')
                   label
                     textarea(rows='10' name='full-text' placeholder='Полный текст публикации' value=(articleData ? `${articleData.text}` : ``))
                       | #{articleData ? `${articleData.text}` : ``}
+          if errorMessages           
+            .form__validation-error
+              p.form__error-message При добавлении статьи произошли ошибки:
+              ul.form__errors
+                each error in errorMessages
+                  li.form__error #{Object.values(error)}

@@ -11,7 +11,9 @@ module.exports = (schema) => (
     } catch (err) {
       const {details} = err;
       res.status(HttpCode.BAD_REQUEST).json({
-        message: details.map((errorDescription) => errorDescription.message),
+        message: details.map((errorDescription) => {
+          return {[errorDescription.path]: errorDescription.message};
+        }),
         data: body
       });
       return;

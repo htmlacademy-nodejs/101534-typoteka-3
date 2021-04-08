@@ -42,10 +42,16 @@ block content
                     p Евгений Петров •
                     time.comments__date(datetime='2019-03-21T20:33') #{formatDate(comment.createdAt)}
                   p.comments__message #{comment.text}
-          .comments__footer.comments__footer--user
+          .comments__footer.comments__footer--user           
             form(action=`/articles/${article.id}/comments` method='POST' enctype='multipart/form-data')
               .comments__avatar.avatar
                 img(src='img/avatar-2.png' alt='аватар пользователя')
               label
-                textarea(rows='1' name='text' placeholder='Присоединиться к обсуждению')
+                textarea(rows='1' name='text' required='true' placeholder='Присоединиться к обсуждению')
               button.comments__button.button.button--colored(type='submit') Опубликовать
+              if errorMessages           
+                .form__validation-error
+                  p.form__error-message При добавлении комментария произошли ошибки:
+                  ul.form__errors
+                    each error in errorMessages
+                      li.form__error #{Object.values(error)}
