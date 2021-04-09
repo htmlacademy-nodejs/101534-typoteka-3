@@ -159,10 +159,11 @@ describe(`API returns an article with given id`, () => {
 describe(`API creates an article if data is valid`, () => {
 
   const newArticle = {
-    "title": `Новая статья`,
-    "announce": `Новая статья`,
+    "title": `Заголовок новой статьи с огромным количеством символов`,
+    "announce": `анонс новой статьи с огромным количеством символов`,
     "text": `Новая статья`,
-    "picture": `Image.jpg`
+    "picture": `Image.jpg`,
+    "categories": ['2']
   };
   let app;
   let response;
@@ -184,27 +185,75 @@ describe(`API creates an article if data is valid`, () => {
 
 });
 
+
 describe(`API refuses to create an article if data is invalid`, () => {
 
-  const newArticle = {
-    "title": `Новая статья`,
-    "createdDate": `18.02.2021`,
-    "announce": `Новая статья`,
+  let newArticle = {
+    "title": `мелкий заголовок`,
+    "announce": `анонс новой статьи с огромным количеством символов`,
+    "text": `Новая статья`,
     "picture": `Image.jpg`,
-    "comments": []
+    "categories": ['2']
   };
   let app;
 
-  test(`Without any required property response code is 400`, async () => {
+  beforeAll(async () => {
     app = await createAPI();
-    for (const key of Object.keys(newArticle)) {
-      const badOffer = {...newArticle};
-      delete badOffer[key];
-      await request(app)
-        .post(`/articles`)
-        .send(badOffer)
-        .expect(HttpCode.BAD_REQUEST);
-    }
+  });
+
+  test(`API returns code 400 if title length is not enough`, async () => {
+
+    await request(app)
+      .post(`/articles`)
+      .send(newArticle)
+      .expect(HttpCode.BAD_REQUEST)
+  });
+
+  newArticle = {
+    "title": `Заголовок новой статьи с огромным количеством символов`,
+    "announce": `анонс новой статьи с огромным количеством символов`,
+    "text": `Новая статья`,
+    "picture": `Image.jpg`,
+    "categories": []
+  };
+
+  test(`API returns code 400 if categories have no children`, async () => {
+
+    await request(app)
+      .post(`/articles`)
+      .send(newArticle)
+      .expect(HttpCode.BAD_REQUEST)
+  });
+
+  newArticle = {
+    "title": `Заголовок новой статьи с огромным количеством символов`,
+    "announce": `анонс новой статьи с огромным количеством символов`,
+    "text": `Новая статья`,
+    "picture": `Image.exe`,
+    "categories": ['1']
+  };
+
+  test(`API returns code 400 if picture has wrong extension`, async () => {
+
+    await request(app)
+      .post(`/articles`)
+      .send(newArticle)
+      .expect(HttpCode.BAD_REQUEST)
+  });
+
+  newArticle = {
+    "title": `Заголовок новой статьи с огромным количеством символов`,
+    "text": `Новая статья`,
+    "picture": `Image.jpg`,
+    "categories": ['1']
+  };
+
+  test(`API returns code 400 if announce field doesnt exist`, async () => {
+
+    await request(app)
+      .post(`/articles`)
+      .send(newArticle)
+      .expect(HttpCode.BAD_REQUEST)
   });
 
 });
@@ -212,15 +261,11 @@ describe(`API refuses to create an article if data is invalid`, () => {
 describe(`API changes existent article`, () => {
 
   const newArticle = {
-    "title": `Измененная статья`,
-    "createdDate": `18.02.2021`,
-    "announce": `Новая статья`,
+    "title": `Измененный заголовок статьи с огромным количеством символов`,
+    "announce": `анонс новой статьи с огромным количеством символов`,
     "text": `Новая статья`,
-    "category": [
-      `Кино`
-    ],
     "picture": `Image.jpg`,
-    "comments": []
+    "categories": ['2']
   };
   let app;
   let response;
@@ -236,7 +281,7 @@ describe(`API changes existent article`, () => {
 
   test(`Article is really changed`, () => request(app)
     .get(`/articles/1`)
-    .expect((res) => expect(res.body.title).toBe(`Измененная статья`))
+    .expect((res) => expect(res.body.title).toBe(`Измененный заголовок статьи с огромным количеством символов`))
   );
 
 });
@@ -268,17 +313,17 @@ test(`API returns status code 400 when trying to change an article with invalid 
   const app = await createAPI();
 
   const invalidArticle = {
-    "title": `Измененная статья`,
+    "title": `мало символов`,
     "createdDate": `18.02.2021`,
     "fullText": `Новая статья`,
     "category": [
       `Кино`
     ],
-    "picture": `Image.jpg`,
+    "picture": `не картинка`,
   };
 
   return request(app)
-    .put(`/articles/NOEXST`)
+    .put(`/articles/2`)
     .send(invalidArticle)
     .expect(HttpCode.BAD_REQUEST);
 });
@@ -383,6 +428,16 @@ test(`API refuses to create a comment when data is invalid, and returns status c
   return request(app)
     .post(`/articles/1/comments`)
     .send({})
+    .expect(HttpCode.BAD_REQUEST);
+
+});
+
+test(`API refuses to create a comment when comment's length is not enough, and returns status code 400`, async() => {
+  const app = await createAPI();
+
+  return request(app)
+    .post(`/articles/1/comments`)
+    .send({text: `мало`})
     .expect(HttpCode.BAD_REQUEST);
 
 });

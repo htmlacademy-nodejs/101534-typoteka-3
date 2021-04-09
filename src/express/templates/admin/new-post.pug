@@ -19,11 +19,11 @@ block content
             .new-publication__header
               h1 Новая публикация
               .new-publication__date-form
-                h3 Дата публикации
+                h3 Дата публикации 
                 .new-publication__date-form-division
                   .new-publication__date-block
                     label(for='new-publication-date' aria-label='Календарь')
-                    input#new-publication-date(type='text' name='date' placeholder='2019-03-21' value=(articleData ? `${articleData.createdDate}` : ``))
+                    input#new-publication-date(type='text' name='date')
               button.new-publication__button.button.button--colored(type='submit') Опубликовать
             a.popup__button.button.button--popup-close(aria-label='Закрыть окно')
               | Закрыть
@@ -44,12 +44,16 @@ block content
                       | Обзор
                 .new-publication__category-wrapper
                   +errorMessage(errorMessages, 'categories')
-                  if articleData && articleData.categories
+                  if !categories && articleData && articleData.categories
                     each category in articleData.categories
                       .new-publication__checkbox.new-publication__checkbox--auto
-                        input(type='checkbox' name=category.name id=category.id checked)
+                        input(type='checkbox' name=category.name id=category.id value=category.id checked)
                         label(for=category.id) #{category.name}
-                  a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
+                  if categories
+                    each category in categories
+                      .new-publication__checkbox.new-publication__checkbox--auto
+                        input(type='checkbox' name='categories' id=category.id value=category.id)
+                        label(for=category.id) #{category.name}                  
               .form__wrapper.form__wrapper--text
                 .form__field.form__field--publication-text
                   +errorMessage(errorMessages, 'announce')

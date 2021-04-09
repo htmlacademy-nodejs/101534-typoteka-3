@@ -15,14 +15,7 @@ const UPLOAD_DIR = `upload`;
 
 const app = express();
 
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      scriptSrc: [`'self'`]
-    }
-  },
-  xssFilter: true,
-}));
+app.use(helmet.xssFilter());
 
 app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
 app.use(express.static(path.resolve(__dirname, UPLOAD_DIR)));

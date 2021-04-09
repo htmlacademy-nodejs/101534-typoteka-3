@@ -23,7 +23,7 @@ html(lang='ru')
           })
 
         }
-      if showError(errors, field)
+      if errors && showError(errors, field)
         each error in showError(errors, field)
           .form__validation-error
             p.form__error-message #{error}

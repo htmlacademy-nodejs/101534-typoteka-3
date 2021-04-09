@@ -47,7 +47,10 @@ articlesRouter.get(`/category/:id`, async (req, res) => {
   res.render(`user/articles-by-category`, {articlesByPage, categories, id, name, page, totalPages});
 });
 
-articlesRouter.get(`/add`, (req, res) => res.render(`admin/new-post`));
+articlesRouter.get(`/add`, async (req, res) => {
+  const categories = await api.getCategories(true);
+  res.render(`admin/new-post`, {categories});
+});
 
 articlesRouter.post(`/add`,
     upload.single(`photo`),
@@ -59,7 +62,7 @@ articlesRouter.post(`/add`,
         title: body.title,
         announce: body.announcement,
         text: body[`full-text`],
-        categories: body.category
+        categories: body.categories
       };
 
       try {
@@ -67,8 +70,13 @@ articlesRouter.post(`/add`,
         await api.createArticle(articleData);
         res.redirect(`/my`);
       } catch (e) {
-        const errorMessages = e.response.data.message;
-        res.render(`admin/new-post`, {articleData, errorMessages});
+        let errorMessages;
+        if (e.response && e.response.data) {
+          errorMessages = e.response.data.message;
+        }
+
+        const categories = await api.getCategories(true);
+        res.render(`admin/new-post`, {articleData, errorMessages, categories});
       }
     }
 );
@@ -115,7 +123,6 @@ articlesRouter.get(`/:id`, async (req, res) => {
     const article = await api.getArticle(id, true);
     res.render(`user/post`, {article});
   } catch (err) {
-    console.log(err.response.status);
     res.status(400).render(`errors/404`);
   }
 

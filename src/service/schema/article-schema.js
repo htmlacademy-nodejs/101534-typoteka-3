@@ -18,8 +18,7 @@ module.exports = Joi.object({
   picture: Joi.string()
         .pattern(/^.*\.(jpg|JPG|jpeg|JPEG|png|PNG)$/),
   createdDate: Joi.string()
-        .isoDate()
-        .required(),
+        .isoDate(),
   categories: Joi.array()
         .items(Joi.string())
         .min(1)
