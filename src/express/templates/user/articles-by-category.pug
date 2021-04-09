@@ -7,10 +7,11 @@ block content
       h2.visually-hidden Список тем
       ul.themes
         each category in categories
-          li.themes__item
-            a(class=(category.id==id ? 'themes__item-link themes__item-link--active' : 'themes__item-link' ) href='/articles/category/'+category.id)
-              | #{category.name} 
-              sup #{category.count}
+          if category.count > 0
+            li.themes__item
+              a(class=(category.id==id ? 'themes__item-link themes__item-link--active' : 'themes__item-link' ) href='/articles/category/'+category.id)
+                | #{category.name} 
+                sup #{category.count}
     section.articles-category__list.preview
       h2.visually-hidden Список превью статей
       ul.preview__list
