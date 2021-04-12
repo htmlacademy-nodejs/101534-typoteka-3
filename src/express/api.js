@@ -55,6 +55,13 @@ class API {
     });
   }
 
+  async createUser(userData) {
+    return this._load(`/user`, {
+      method: `POST`,
+      data: userData
+    });
+  }
+
   async updateArticle(id, data) {
     return this._load(`/articles/${id}`, {
       method: `PUT`,

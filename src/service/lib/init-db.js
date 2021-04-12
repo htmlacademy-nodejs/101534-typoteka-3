@@ -15,7 +15,8 @@ module.exports = async (sequelize, categories, articles, users) => {
       users.map((item) => ({
         email: item.email,
         firstName: item.firstName,
-        lastName: item.lastName
+        lastName: item.lastName,
+        password: item.password
       }))
   );
 

@@ -31,21 +31,21 @@ module.exports = {
   users: [
     {
       email: `ivanov@example.com`,
-      passwordHash: `5f4dcc3b5aa765d61d8327deb882cf99`,
+      password: `5f4dcc3b5aa765d61d8327deb882cf99`,
       firstName: `Иван`,
       lastName: `Иванов`,
       avatar: `avatar1.jpg`
     },
     {
       email: `petrov@example.com`,
-      passwordHash: `5f4dcc3b5aa765d61d8327deb882cf99`,
+      password: `5f4dcc3b5aa765d61d8327deb882cf99`,
       firstName: `Пётр`,
       lastName: `Петров`,
       avatar: `avatar2.jpg`
     },
     {
       email: `test@example.com`,
-      passwordHash: `5f4dcc3b5aa765d61d8327deb882cf99`,
+      password: `5f4dcc3b5aa765d61d8327deb882cf99`,
       firstName: `Тест`,
       lastName: `Тестов`,
       avatar: `avatar3.jpg`
