@@ -66,6 +66,26 @@ mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
 
 mainRouter.get(`/login`, (req, res) => res.render(`user/login`));
 
+mainRouter.post(`/login`, upload.none(), async (req, res) => {
+  const {body} = req;
+  const userData = {
+    email: body.email,
+    password: body.password
+  };
+
+  try {
+    await api.login(userData);
+    res.redirect(`/`);
+  } catch (e) {
+    let errorMessages;
+    if (e.response && e.response.data) {
+      errorMessages = e.response.data.message;
+    }
+    res.render(`user/login`, {userData, errorMessages});
+  }
+
+});
+
 mainRouter.get(`/search`,
     async (req, res) => {
       try {

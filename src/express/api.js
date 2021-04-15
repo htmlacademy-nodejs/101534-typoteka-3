@@ -62,6 +62,13 @@ class API {
     });
   }
 
+  async login(userData) {
+    return this._load(`/user/auth`, {
+      method: `POST`,
+      data: userData
+    });
+  }
+
   async updateArticle(id, data) {
     return this._load(`/articles/${id}`, {
       method: `PUT`,
