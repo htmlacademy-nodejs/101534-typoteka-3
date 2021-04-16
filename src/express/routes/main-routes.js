@@ -53,7 +53,7 @@ mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
 
   try {
     await api.createUser(userData);
-    res.redirect(`/login`);
+    res.redirect(`/`);
   } catch (e) {
     let errorMessages;
     if (e.response && e.response.data) {
@@ -74,9 +74,13 @@ mainRouter.post(`/login`, upload.none(), async (req, res) => {
   };
 
   try {
-    await api.login(userData);
-    res.redirect(`/`);
+    const tokens = await api.login(userData);
+
+    res.render(`user/login`, {userData, tokens});
+
+    // res.redirect(`/`);
   } catch (e) {
+    console.log(e);
     let errorMessages;
     if (e.response && e.response.data) {
       errorMessages = e.response.data.message;

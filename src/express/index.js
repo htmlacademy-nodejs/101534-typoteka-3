@@ -4,6 +4,7 @@ const express = require(`express`);
 const helmet = require(`helmet`);
 const chalk = require(`chalk`);
 const path = require(`path`);
+const session = require(`express-session`);
 
 const mainRoutes = require(`./routes/main-routes`);
 const articlesRoutes = require(`./routes/articles-routes`);
@@ -19,6 +20,10 @@ app.use(helmet.xssFilter());
 
 app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
 app.use(express.static(path.resolve(__dirname, UPLOAD_DIR)));
+
+app.use(session({
+  cookie: {maxAge: 86400}
+}));
 
 app.use(`/`, mainRoutes);
 app.use(`/articles`, articlesRoutes);

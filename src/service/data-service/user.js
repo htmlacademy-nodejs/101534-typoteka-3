@@ -29,7 +29,7 @@ class UserService {
     return !!affectedRows;
   }
 
-  async find(token) {
+  async findToken(token) {
     const user = await this._User.findOne({where: {token}});
     return user;
   }
