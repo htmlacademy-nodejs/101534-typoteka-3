@@ -7,10 +7,11 @@ const paramValidator = require(`../middlewares/param-validator`);
 const articleExist = require(`../middlewares/article-exists`);
 const articleSchema = require(`../schema/article-schema`);
 const commentSchema = require(`../schema/comment-schema`);
+const authenticateJwt = require(`../middlewares/authenticate-jwt`);
 
 const route = new Router();
 
-module.exports = (app, articleService, commentService) => {
+module.exports = (app, articleService, commentService, userService) => {
   app.use(`/articles`, route);
 
   route.get(`/`, async (req, res) => {
@@ -21,6 +22,14 @@ module.exports = (app, articleService, commentService) => {
     } else {
       result = await articleService.findAll(true);
     }
+    res.status(HttpCode.OK).json(result);
+  });
+
+  route.get(`/user`, authenticateJwt, async (req, res) => {
+
+    let user = await userService.findToken(req.headers[`authorization`].split(` `)[2]);
+
+    const result = await articleService.findAll(false, user.id);
     res.status(HttpCode.OK).json(result);
   });
 

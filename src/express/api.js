@@ -29,6 +29,12 @@ class API {
     return this._load(`/articles/${id}`);
   }
 
+  getArticlesByUser(token) {
+    return this._load(`/articles/user`, {
+      headers: {authorization: token}
+    });
+  }
+
   getComments(id) {
     return this._load(`/articles/${id}/comments`);
   }

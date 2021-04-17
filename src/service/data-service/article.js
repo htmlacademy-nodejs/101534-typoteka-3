@@ -20,13 +20,20 @@ class ArticleService {
     return !!deletedRows;
   }
 
-  async findAll(needComments) {
+  async findAll(needComments, userId) {
     const include = [`categories`];
     if (needComments) {
       include.push(`comments`);
     }
+    let articles;
+    if (userId) {
+      articles = await this._Article.findAll({
+        where: {userId}
+      });
+    } else {
+      articles = await this._Article.findAll({include});
+    }
 
-    const articles = await this._Article.findAll({include});
     return articles.map((item) => item.get());
   }
 
