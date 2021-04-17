@@ -79,8 +79,6 @@ mainRouter.post(`/login`, upload.none(), async (req, res) => {
     res.cookie(`accessToken=${accessToken}`, {maxAge: 864000});
     res.cookie(`refreshToken=${refreshToken}`, {maxAge: 864000});
 
-    //res.render(`user/login`, {userData});
-
     res.redirect(`/`);
   } catch (e) {
     let errorMessages;

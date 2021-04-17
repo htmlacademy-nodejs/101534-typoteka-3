@@ -62,12 +62,14 @@ articlesRouter.post(`/add`,
         title: body.title,
         announce: body.announcement,
         text: body[`full-text`],
-        categories: body.categories
+        categories: [...body.categories]
       };
+
+      const token = `Bearer ${req.cookies.accessToken.split(`=`)[0]} ${req.cookies.refreshToken.split(`=`)[0]}`;
 
       try {
 
-        await api.createArticle(articleData);
+        await api.createArticle(articleData, token);
         res.redirect(`/my`);
       } catch (e) {
         let errorMessages;

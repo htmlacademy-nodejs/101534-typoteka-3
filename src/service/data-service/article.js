@@ -7,8 +7,9 @@ class ArticleService {
     this._Category = sequelize.models.Category;
   }
 
-  async create(articleData) {
-    const article = await this._Article.create(articleData);
+  async create(articleData, userId) {
+    articleData = {...articleData, userId};
+    const article = await this._Article.create({...articleData, userId});
     await article.addCategories(articleData.categories);
     return article.get();
   }

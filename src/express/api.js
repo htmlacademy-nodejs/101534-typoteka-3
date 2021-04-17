@@ -47,10 +47,11 @@ class API {
     return this._load(`/categories`, {params: {count}});
   }
 
-  async createArticle(data) {
+  async createArticle(data, token) {
     return this._load(`/articles`, {
       method: `POST`,
-      data
+      data,
+      headers: {authorization: token}
     });
   }
 

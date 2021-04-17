@@ -7,7 +7,6 @@ const {JWT_ACCESS_SECRET} = process.env;
 
 module.exports = (req, res, next) => {
   const authorization = req.headers[`authorization`];
-  console.log(req)
 
   if (!authorization) {
     return res.sendStatus(HttpCode.UNAUTHORIZED);

@@ -47,7 +47,8 @@ module.exports = (app, articleService, commentService, userService) => {
   });
 
   route.post(`/`, validator(articleSchema), async (req, res) => {
-    const article = await articleService.create(req.body);
+    const user = await userService.findToken(req.headers[`authorization`].split(` `)[2]);
+    const article = await articleService.create(req.body, user.id);
 
     return res.status(HttpCode.CREATED)
       .json(article);
