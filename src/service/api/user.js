@@ -36,16 +36,16 @@ module.exports = (app, userService) => {
 
   route.get(`/checkauth`, async (req, res) => {
 
-    jwt.verify(req.headers[`authorization`].split(` `)[1], JWT_ACCESS_SECRET, (err) => {
+    jwt.verify(req.headers[`authorization`].split(` `)[1], JWT_ACCESS_SECRET, async (err) => {
 
       if (err) {
         return res.sendStatus(HttpCode.FORBIDDEN);
+      } else {
+        let user = await userService.findToken(req.headers[`authorization`].split(` `)[2]);
+        return res.json(user);
       }
-
-      return true;
     });
-    let user = await userService.findToken(req.headers[`authorization`].split(` `)[2]);
-    return res.json(user);
+
   });
 
   route.post(`/refresh`, async (req, res) => {
