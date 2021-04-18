@@ -12,7 +12,7 @@ const {makeTokens} = require(`../lib/jwt-helper`);
 const jwt = require(`jsonwebtoken`);
 const saltRounds = 10;
 
-const {JWT_REFRESH_SECRET} = process.env;
+const {JWT_ACCESS_SECRET, JWT_REFRESH_SECRET} = process.env;
 
 const route = new Router();
 
@@ -35,12 +35,21 @@ module.exports = (app, userService) => {
   });
 
   route.get(`/checkauth`, async (req, res) => {
+
+    jwt.verify(req.headers[`authorization`].split(` `)[1], JWT_ACCESS_SECRET, (err) => {
+
+      if (err) {
+        return res.sendStatus(HttpCode.FORBIDDEN);
+      }
+
+      return true;
+    });
     let user = await userService.findToken(req.headers[`authorization`].split(` `)[2]);
     return res.json(user);
   });
 
   route.post(`/refresh`, async (req, res) => {
-    const {token} = req.body;
+    const token = req.headers[`authorization`].split(` `)[2];
 
     if (!token) {
       return res.sendStatus(HttpCode.BAD_REQUEST);
@@ -61,7 +70,7 @@ module.exports = (app, userService) => {
       const {accessToken, refreshToken} = makeTokens({id});
 
       await userService.dropToken(existToken);
-      await userService.addToken(refreshToken);
+      await userService.addToken(id, refreshToken);
 
       return res.json({accessToken, refreshToken});
     });

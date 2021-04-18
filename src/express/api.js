@@ -95,6 +95,12 @@ class API {
       headers: {authorization: token}
     });
   }
+
+  async refresh(token) {
+    return this._load(`user/refresh`, {
+      headers: {authorization: token}
+    });
+  }
 }
 
 const defaultAPI = new API(defaultURL, TIMEOUT);
