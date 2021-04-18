@@ -76,10 +76,23 @@ class API {
     });
   }
 
+  async logout(token) {
+    return this._load(`/user/logout`, {
+      method: `DELETE`,
+      headers: {authorization: token}
+    });
+  }
+
   async updateArticle(id, data) {
     return this._load(`/articles/${id}`, {
       method: `PUT`,
       data
+    });
+  }
+
+  async checkAuth(token) {
+    return this._load(`user/checkauth`, {
+      headers: {authorization: token}
     });
   }
 }

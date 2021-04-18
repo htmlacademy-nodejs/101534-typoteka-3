@@ -3,6 +3,7 @@
 const {Router} = require(`express`);
 const articlesRouter = new Router();
 const api = require(`../api.js`).getAPI();
+const checkAuth = require(`../middlewares/check-auth`);
 
 const multer = require(`multer`);
 const path = require(`path`);
@@ -25,11 +26,12 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage});
 
-articlesRouter.get(`/category/:id`, async (req, res) => {
+articlesRouter.get(`/category/:id`, checkAuth(api), async (req, res) => {
   let {page = 1} = req.query;
   page = +page;
   const limit = ARTICLES_PER_PAGE;
   const offset = (page - 1) * ARTICLES_PER_PAGE;
+  const user = res.locals.user;
 
   const {id} = req.params;
   const articles = await api.getArticles();
@@ -44,16 +46,17 @@ articlesRouter.get(`/category/:id`, async (req, res) => {
   });
   const totalPages = Math.ceil(categoryArticles.length / ARTICLES_PER_PAGE);
   const articlesByPage = categoryArticles.slice(offset, offset + limit);
-  res.render(`user/articles-by-category`, {articlesByPage, categories, id, name, page, totalPages});
+  res.render(`user/articles-by-category`, {articlesByPage, categories, id, name, page, totalPages, user});
 });
 
-articlesRouter.get(`/add`, async (req, res) => {
+articlesRouter.get(`/add`, checkAuth(api), async (req, res) => {
+  const user = res.locals.user;
   const categories = await api.getCategories(true);
-  res.render(`admin/new-post`, {categories});
+  res.render(`admin/new-post`, {categories, user});
 });
 
 articlesRouter.post(`/add`,
-    upload.single(`photo`),
+    [upload.single(`photo`), checkAuth(api)],
     async (req, res) => {
       const {body, file} = req;
       const articleData = {
@@ -64,6 +67,7 @@ articlesRouter.post(`/add`,
         text: body[`full-text`],
         categories: [...body.categories]
       };
+      const user = res.locals.user;
 
       const token = `Bearer ${req.cookies.accessToken.split(`=`)[0]} ${req.cookies.refreshToken.split(`=`)[0]}`;
 
@@ -78,13 +82,14 @@ articlesRouter.post(`/add`,
         }
 
         const categories = await api.getCategories(true);
-        res.render(`admin/new-post`, {articleData, errorMessages, categories});
+        res.render(`admin/new-post`, {articleData, errorMessages, categories, user});
       }
     }
 );
 
-articlesRouter.get(`/edit/:id`, async (req, res) => {
+articlesRouter.get(`/edit/:id`, checkAuth(api), async (req, res) => {
   const {id} = req.params;
+  const {user} = res.locals;
 
   const [articleData, comments] = await Promise.all([
     api.getArticle(id),
@@ -92,11 +97,12 @@ articlesRouter.get(`/edit/:id`, async (req, res) => {
   ]);
   const route = `articles/edit/${id}`;
 
-  res.render(`admin/new-post`, {articleData, comments, route});
+  res.render(`admin/new-post`, {articleData, comments, route, user});
 });
 
-articlesRouter.post(`/edit/:id`, upload.single(`photo`), async (req, res) => {
+articlesRouter.post(`/edit/:id`, [upload.single(`photo`), checkAuth(api)], async (req, res) => {
   const {id} = req.params;
+  const {user} = res.locals;
 
   const {body, file} = req;
   const articleData = {
@@ -114,24 +120,26 @@ articlesRouter.post(`/edit/:id`, upload.single(`photo`), async (req, res) => {
     res.redirect(`/my`);
   } catch (e) {
     const errorMessages = e.response.data.message;
-    res.render(`admin/new-post`, {articleData, errorMessages});
+    res.render(`admin/new-post`, {articleData, errorMessages, user});
   }
 
 });
 
-articlesRouter.get(`/:id`, async (req, res) => {
+articlesRouter.get(`/:id`, checkAuth(api), async (req, res) => {
   const {id} = req.params;
+  const {user} = res.locals;
   try {
     const article = await api.getArticle(id, true);
-    res.render(`user/post`, {article});
+    res.render(`user/post`, {article, user});
   } catch (err) {
     res.status(400).render(`errors/404`);
   }
 
 });
 
-articlesRouter.post(`/:id/comments`, upload.single(`photo`), async (req, res) => {
+articlesRouter.post(`/:id/comments`, checkAuth(api), upload.single(`photo`), async (req, res) => {
   const {id} = req.params;
+  const {user} = res.locals;
 
   const {body} = req;
   const commentData = {
@@ -145,7 +153,7 @@ articlesRouter.post(`/:id/comments`, upload.single(`photo`), async (req, res) =>
   } catch (e) {
     const errorMessages = e.response.data.message;
     const article = await api.getArticle(id, true);
-    res.render(`user/post`, {article, errorMessages});
+    res.render(`user/post`, {article, errorMessages, user});
   }
 
 });

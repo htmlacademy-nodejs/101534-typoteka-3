@@ -6,6 +6,7 @@ const {HttpCode} = require(`../../constants`);
 const {JWT_ACCESS_SECRET} = process.env;
 
 module.exports = (req, res, next) => {
+
   const authorization = req.headers[`authorization`];
 
   if (!authorization) {

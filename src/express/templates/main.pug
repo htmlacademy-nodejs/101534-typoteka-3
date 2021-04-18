@@ -74,7 +74,7 @@ block content
             ul.preview__breadcrumbs
               each category in article.categories
                 li.preview__breadcrumbs-item
-                  a.preview__breadcrumbs-link(href='#') #{category.name}
+                  a.preview__breadcrumbs-link(href='/articles/category/'+category.id) #{category.name}
             .preview__background
               img.preview__background-image(src=`img/${article.picture}` width='460' height='240')
             time.preview__time  #{article.createdDate}

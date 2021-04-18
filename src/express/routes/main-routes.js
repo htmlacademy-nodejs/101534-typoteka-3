@@ -3,6 +3,7 @@
 const {Router} = require(`express`);
 const mainRouter = new Router();
 const api = require(`../api.js`).getAPI();
+const checkAuth = require(`../middlewares/check-auth`);
 
 const multer = require(`multer`);
 const {nanoid} = require(`nanoid`);
@@ -23,7 +24,7 @@ const upload = multer({storage});
 
 const ARTICLES_PER_PAGE = 8;
 
-mainRouter.get(`/`, async (req, res) => {
+mainRouter.get(`/`, checkAuth(api), async (req, res) => {
   let {page = 1} = req.query;
   page = +page;
   const limit = ARTICLES_PER_PAGE;
@@ -34,7 +35,8 @@ mainRouter.get(`/`, async (req, res) => {
   const categories = await api.getCategories(true);
 
   const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
-  res.render(`main`, {articles, page, totalPages, categories});
+  const user = res.locals.user;
+  res.render(`main`, {articles, page, totalPages, categories, user});
 });
 
 mainRouter.get(`/register`, (req, res) => res.render(`user/sign-up`));
@@ -90,8 +92,17 @@ mainRouter.post(`/login`, upload.none(), async (req, res) => {
 
 });
 
-mainRouter.get(`/search`,
+mainRouter.get(`/logout`, upload.none(), async (req, res) => {
+  await api.logout(`Bearer ${req.cookies.accessToken.split(`=`)[0]} ${req.cookies.refreshToken.split(`=`)[0]}`);
+
+  res.redirect(`/login`);
+
+
+});
+
+mainRouter.get(`/search`, checkAuth(api),
     async (req, res) => {
+      const user = res.locals.user;
       try {
         const {search} = req.query;
         if (!search) {
@@ -101,17 +112,21 @@ mainRouter.get(`/search`,
         const results = await api.search(search);
 
         res.render(`user/search`, {
-          results
+          results,
+          user
         });
       } catch (error) {
         res.render(`user/search`, {
-          results: `нет совпадений`
+          results: `нет совпадений`,
+          user
         });
       }
     });
-mainRouter.get(`/categories`, async (req, res) => {
+
+mainRouter.get(`/categories`, checkAuth(api), async (req, res) => {
+  const user = res.locals.user;
   const categories = await api.getCategories(true);
-  res.render(`admin/all-categories`, {categories});
+  res.render(`admin/all-categories`, {categories, user});
 });
 
 
