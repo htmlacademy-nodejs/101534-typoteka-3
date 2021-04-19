@@ -35,6 +35,12 @@ class API {
     });
   }
 
+  getCommentsByUser(token) {
+    return this._load(`/articles/user/comments`, {
+      headers: {authorization: token}
+    });
+  }
+
   getComments(id) {
     return this._load(`/articles/${id}/comments`);
   }
@@ -45,6 +51,12 @@ class API {
 
   async getCategories(count) {
     return this._load(`/categories`, {params: {count}});
+  }
+
+  async getCategoriesByUser(user, token) {
+    return this._load(`/categories/user/${user.id}`, {
+      headers: {authorization: token}
+    });
   }
 
   async createArticle(data, token) {
@@ -91,13 +103,14 @@ class API {
   }
 
   async checkAuth(token) {
-    return this._load(`user/checkauth`, {
+    return this._load(`/user/checkauth`, {
       headers: {authorization: token}
     });
   }
 
   async refresh(token) {
-    return this._load(`user/refresh`, {
+    return this._load(`/user/refresh`, {
+      method: `POST`,
       headers: {authorization: token}
     });
   }

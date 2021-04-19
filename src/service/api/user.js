@@ -5,7 +5,6 @@ const {HttpCode} = require(`../../constants`);
 const validator = require(`../middlewares/validator`);
 const alreadyRegistered = require(`../middlewares/already-register`);
 const authenticate = require(`../middlewares/authenticate`);
-const authenticateJwt = require(`../middlewares/authenticate-jwt`);
 const userSchema = require(`../schema/user-schema`);
 const bcrypt = require(`bcrypt`);
 const {makeTokens} = require(`../lib/jwt-helper`);
@@ -77,8 +76,9 @@ module.exports = (app, userService) => {
     return true;
   });
 
-  route.delete(`/logout`, authenticateJwt, async (req, res) => {
+  route.delete(`/logout`, async (req, res) => {
     await userService.dropToken(req.headers[`authorization`].split(` `)[2]);
     res.sendStatus(HttpCode.NO_CONTENT);
   });
+
 };

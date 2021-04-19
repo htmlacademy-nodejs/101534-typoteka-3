@@ -8,8 +8,14 @@ module.exports = (api) => (
       try {
         const user = await api.checkAuth(token);
         res.locals.user = user;
-      } catch (err) {
-        await api.refresh(token);
+      } catch (error) {
+        console.log(error);
+
+        try {
+          await api.refresh(token);
+        } catch (err) {
+          console.log(err);
+        }
       }
 
     }

@@ -33,7 +33,6 @@ mainRouter.get(`/`, checkAuth(api), async (req, res) => {
 
   const {count, articles} = await api.getArticles({limit, offset});
   const categories = await api.getCategories(true);
-
   const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
   const user = res.locals.user;
   res.render(`main`, {articles, page, totalPages, categories, user});
@@ -125,8 +124,16 @@ mainRouter.get(`/search`, checkAuth(api),
 
 mainRouter.get(`/categories`, checkAuth(api), async (req, res) => {
   const user = res.locals.user;
-  const categories = await api.getCategories(true);
-  res.render(`admin/all-categories`, {categories, user});
+  if (!user) {
+    res.redirect(`/login`);
+  }
+  try {
+    const categories = await api.getCategoriesByUser(user, `Bearer ${req.cookies.accessToken.split(`=`)[0]} ${req.cookies.refreshToken.split(`=`)[0]}`);
+    res.render(`admin/all-categories`, {categories, user});
+  } catch (e) {
+    res.redirect(`/login`);
+  }
+
 });
 
 

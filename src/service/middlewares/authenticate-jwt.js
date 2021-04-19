@@ -15,6 +15,7 @@ module.exports = (req, res, next) => {
 
   const [, token] = authorization.split(` `);
 
+
   if (!token) {
     return res.sendStatus(HttpCode.UNAUTHORIZED);
   }

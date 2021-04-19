@@ -28,6 +28,12 @@ class CategoryService {
       return this._Category.findAll({raw: true});
     }
   }
+
+  async findByUser() {
+
+    return this._Category.findAll({raw: true});
+
+  }
 }
 
 module.exports = CategoryService;

@@ -33,6 +33,14 @@ module.exports = (app, articleService, commentService, userService) => {
     res.status(HttpCode.OK).json(result);
   });
 
+  route.get(`/user/comments`, authenticateJwt, async (req, res) => {
+
+    let user = await userService.findToken(req.headers[`authorization`].split(` `)[2]);
+
+    const comments = await commentService.findAll(user.id);
+    res.status(HttpCode.OK).json(comments);
+  });
+
   route.get(`/:articleId`, paramValidator(`articleId`), async (req, res) => {
     const {articleId} = req.params;
     const article = await articleService.findOne(articleId, true);
@@ -46,7 +54,7 @@ module.exports = (app, articleService, commentService, userService) => {
       .json(article);
   });
 
-  route.post(`/`, validator(articleSchema), async (req, res) => {
+  route.post(`/`, [authenticateJwt, validator(articleSchema)], async (req, res) => {
     const user = await userService.findToken(req.headers[`authorization`].split(` `)[2]);
     const article = await articleService.create(req.body, user.id);
 
@@ -54,7 +62,7 @@ module.exports = (app, articleService, commentService, userService) => {
       .json(article);
   });
 
-  route.put(`/:articleId`, [paramValidator(`articleId`), validator(articleSchema)], async (req, res) => {
+  route.put(`/:articleId`, [authenticateJwt, paramValidator(`articleId`), validator(articleSchema)], async (req, res) => {
     const {articleId} = req.params;
     const updated = await articleService.update(articleId, req.body);
 

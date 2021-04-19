@@ -25,7 +25,10 @@ app.use(express.static(path.resolve(__dirname, UPLOAD_DIR)));
 app.use(cookieParser());
 
 app.use(session({
-  secret: `sssss`
+  secret: `sssss`,
+  cookie: {
+    sameSite: `strict`
+  }
 }));
 
 app.use(`/`, mainRoutes);

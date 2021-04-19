@@ -2,12 +2,6 @@ extends ../layout.pug
 
 block content
   -
-    const getArticle = (id) => {
-      const article = articles.find((el) => {
-        return el.id === id;
-      });
-      return article;
-    }
     const formatDate = (dateString) => {
       const date = new Date(dateString);
       return date.toLocaleString();
@@ -20,13 +14,15 @@ block content
           each comment in comments
             li.publication__list-item
               .publication__header
-                img.publication__list-image(src='img/avatar-small-2.png' width='20' height='20' alt='Аватар пользователя')
-                b.publication__list-name Александр Петров
+                if user.avatar
+                  img.publication__list-image(src=`img/${user.avatar}` width='20' height='20' alt='Аватар пользователя')
+                b.publication__list-name #{user.firstName} #{user.lastName} 
                 time.publication__item-time(datetime=`#{formatDate(comment.createdAt)}`) 
                   | #{formatDate(comment.createdAt)}
               a.publication__item-text(href='/articles/'+comment.articleId)
                 | #{comment.text}
               p.publication__text-strong
-                | #{getArticle(comment.articleId).title}
+                a.publication__item-text(href='/articles/'+comment.articleId)
+                  | #{comment['Article.title']}
               button.publication__button.button.button--close-item(type='button')
                 span.visually-hidden Закрыть строку списка
