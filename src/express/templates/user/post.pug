@@ -23,35 +23,53 @@ block content
                     | #{category.name}
                     sup #{category.count}
                   button.themes__remove-btn(type='button') Удалить категорию
-          .post__picture
-            img(src=`img/sea-fullsize@1x.jpg` alt='пейзаж море, скалы, пляж')
+          if article.picture        
+            .post__picture
+              img(src=`img/${article.picture}` alt=`${article.picture}`)
           .post__text
             h3 #{article.title}
             p
               | #{article.text}
       .post__wrapper.post__wrapper--comments
         section.post__comments.comments
-          h2.comments__title.title.title--middle Комментарии
-          ul.comments__list
-            each comment in article.comments
-              li.comments__comment
-                .comments__avatar.avatar
-                  img(src='img/avatar-1.png' alt='аватар пользователя')
-                .comments__text
-                  .comments__head
-                    p Евгений Петров •
-                    time.comments__date(datetime='2019-03-21T20:33') #{formatDate(comment.createdAt)}
-                  p.comments__message #{comment.text}
-          .comments__footer.comments__footer--user           
-            form(action=`/articles/${article.id}/comments` method='POST' enctype='multipart/form-data')
-              .comments__avatar.avatar
-                img(src='img/avatar-2.png' alt='аватар пользователя')
-              label
-                textarea(rows='1' name='text' required='true' placeholder='Присоединиться к обсуждению')
-              button.comments__button.button.button--colored(type='submit') Опубликовать
-              if errorMessages           
-                .form__validation-error
-                  p.form__error-message При добавлении комментария произошли ошибки:
-                  ul.form__errors
-                    each error in errorMessages
-                      li.form__error #{Object.values(error)}
+          if article.comments
+            h2.comments__title.title.title--middle Комментарии
+            ul.comments__list
+              each comment in article.comments
+                li.comments__comment
+                  if comment.User.avatar
+                    .comments__avatar.avatar
+                      img(src=`img/${comment.User.avatar}` alt='аватар пользователя')
+                  .comments__text
+                    .comments__head
+                      p #{comment.User.firstName} #{comment.User.lastName}•
+                      time.comments__date(datetime='2019-03-21T20:33') #{formatDate(comment.createdAt)}
+                    p.comments__message #{comment.text}
+          else
+            h2.comments__title.title.title--middle Комментарии отсутствуют
+          if user
+            .comments__footer.comments__footer--user           
+              form(action=`/articles/${article.id}/comments` method='POST' enctype='multipart/form-data')
+                if user.avatar
+                  .comments__avatar.avatar
+                    img(src=`img/${user.avatar}` alt='аватар пользователя')
+                label
+                  textarea(rows='1' name='text' required='true' placeholder='Присоединиться к обсуждению')
+                button.comments__button.button.button--colored(type='submit') Опубликовать
+                if errorMessages           
+                  .form__validation-error
+                    p.form__error-message При добавлении комментария произошли ошибки:
+                    ul.form__errors
+                      each error in errorMessages
+                        li.form__error #{Object.values(error)}
+          else
+            .comments__footer.comments__footer--visitor
+              button.comments__button.button.button--colored(type='submit')
+                a(href='/register') Войти
+              .comments__registration
+                p.text.text--signature
+                  b.title.title--small Регистрация
+                  | Чтобы присоединиться к
+                  |                   переписке
+                  |                   нужно зарегистрироваться
+

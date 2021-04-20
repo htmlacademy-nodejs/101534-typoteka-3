@@ -9,7 +9,6 @@ module.exports = (api) => (
         const user = await api.checkAuth(token);
         res.locals.user = user;
       } catch (error) {
-        console.log(error);
 
         try {
           await api.refresh(token);

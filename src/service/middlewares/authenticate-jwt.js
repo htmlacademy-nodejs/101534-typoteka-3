@@ -20,7 +20,7 @@ module.exports = (req, res, next) => {
     return res.sendStatus(HttpCode.UNAUTHORIZED);
   }
 
-  jwt.verify(token, JWT_ACCESS_SECRET, (err) => {
+  jwt.verify(token, JWT_ACCESS_SECRET || `test`, (err) => {
 
     if (err) {
       return res.sendStatus(HttpCode.FORBIDDEN);

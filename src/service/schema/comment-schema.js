@@ -8,5 +8,6 @@ module.exports = Joi.object({
         .min(20)
         .max(1000)
         .required(),
+  userId: Joi.number()
 
 });

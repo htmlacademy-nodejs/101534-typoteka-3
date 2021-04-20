@@ -131,6 +131,30 @@ articlesRouter.get(`/:id`, checkAuth(api), async (req, res) => {
   try {
     const article = await api.getArticle(id, true);
     res.render(`user/post`, {article, user});
+
+  } catch (err) {
+    res.status(400).render(`errors/404`);
+  }
+
+});
+
+articlesRouter.post(`/:id`, checkAuth(api), async (req, res) => {
+  const {id} = req.params;
+
+  try {
+    await api.dropArticle(id, `Bearer ${req.cookies.accessToken.split(`=`)[0]} ${req.cookies.refreshToken.split(`=`)[0]}`);
+    res.redirect(`/my`);
+  } catch (err) {
+    res.status(400).render(`errors/404`);
+  }
+
+});
+
+articlesRouter.post(`/:id/comment/:commentId`, checkAuth(api), async (req, res) => {
+  const {commentId} = req.params;
+  try {
+    await api.dropComment(commentId, `Bearer ${req.cookies.accessToken.split(`=`)[0]} ${req.cookies.refreshToken.split(`=`)[0]}`);
+    res.redirect(`/my/comments`);
   } catch (err) {
     res.status(400).render(`errors/404`);
   }
@@ -143,7 +167,8 @@ articlesRouter.post(`/:id/comments`, checkAuth(api), upload.single(`photo`), asy
 
   const {body} = req;
   const commentData = {
-    text: body.text
+    text: body.text,
+    userId: user.id
   };
 
   try {

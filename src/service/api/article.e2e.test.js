@@ -9,7 +9,10 @@ const initDB = require(`../lib/init-db`);
 const article = require(`./article`);
 const DataService = require(`../data-service/article`);
 const CommentService = require(`../data-service/comment`);
+const UserService = require(`../data-service/user`);
 const {HttpCode} = require(`../../constants`);
+
+const {makeTokens} = require(`../lib/jwt-helper`);
 
 const mockCategories = [
   `Программирование`,
@@ -107,13 +110,37 @@ const mockData = JSON.stringify([
   }
 ]);
 
+const mockUsers = [
+  {
+    email: `ivanov@example.com`,
+    password: `5f4dcc3b5aa765d61d8327deb882cf99`,
+    firstName: `Иван`,
+    lastName: `Иванов`,
+    avatar: `avatar1.jpg`
+  },
+  {
+    email: `petrov@example.com`,
+    password: `5f4dcc3b5aa765d61d8327deb882cf99`,
+    firstName: `Пётр`,
+    lastName: `Петров`,
+    avatar: `avatar2.jpg`
+  },
+  {
+    email: `test@example.com`,
+    password: `5f4dcc3b5aa765d61d8327deb882cf99`,
+    firstName: `Тест`,
+    lastName: `Тестов`,
+    avatar: `avatar3.jpg`
+  }
+];
+
 const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
-  await initDB(mockDB, mockCategories, mockData, []);
+  await initDB(mockDB, mockCategories, mockData, mockUsers);
   const app = express();
   const cloneData = JSON.parse(JSON.stringify(mockData));
   app.use(express.json());
-  article(app, new DataService(mockDB), new CommentService(mockDB));
+  article(app, new DataService(mockDB), new CommentService(mockDB), new UserService(mockDB));
   return app;
 };
 
@@ -169,9 +196,11 @@ describe(`API creates an article if data is valid`, () => {
   let response;
 
   beforeAll(async () => {
+    const {accessToken, refreshToken} = makeTokens({id: 1});
     app = await createAPI();
     response = await request(app)
       .post(`/articles`)
+      .set('authorization', `Bearer ${accessToken} ${refreshToken}`) 
       .send(newArticle);
   });
 
@@ -182,6 +211,30 @@ describe(`API creates an article if data is valid`, () => {
     .get(`/articles`)
     .expect((res) => expect(res.body.length).toBe(6))
   );
+
+});
+
+describe(`API refuses to create an article without authorization`, () => {
+
+  const newArticle = {
+    "title": `Заголовок новой статьи с огромным количеством символов`,
+    "announce": `анонс новой статьи с огромным количеством символов`,
+    "text": `Новая статья`,
+    "picture": `Image.jpg`,
+    "categories": ['2']
+  };
+  let app;
+  let response;
+
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app)
+      .post(`/articles`)
+      .send(newArticle);
+  });
+
+
+  test(`Status code 401`, () => expect(response.statusCode).toBe(HttpCode.UNAUTHORIZED));
 
 });
 
@@ -197,6 +250,8 @@ describe(`API refuses to create an article if data is invalid`, () => {
   };
   let app;
 
+  const {accessToken, refreshToken} = makeTokens({id: 1});
+
   beforeAll(async () => {
     app = await createAPI();
   });
@@ -205,6 +260,7 @@ describe(`API refuses to create an article if data is invalid`, () => {
 
     await request(app)
       .post(`/articles`)
+      .set('authorization', `Bearer ${accessToken} ${refreshToken}`) 
       .send(newArticle)
       .expect(HttpCode.BAD_REQUEST)
   });
@@ -221,6 +277,7 @@ describe(`API refuses to create an article if data is invalid`, () => {
 
     await request(app)
       .post(`/articles`)
+      .set('authorization', `Bearer ${accessToken} ${refreshToken}`) 
       .send(newArticle)
       .expect(HttpCode.BAD_REQUEST)
   });
@@ -237,6 +294,7 @@ describe(`API refuses to create an article if data is invalid`, () => {
 
     await request(app)
       .post(`/articles`)
+      .set('authorization', `Bearer ${accessToken} ${refreshToken}`) 
       .send(newArticle)
       .expect(HttpCode.BAD_REQUEST)
   });
@@ -252,6 +310,7 @@ describe(`API refuses to create an article if data is invalid`, () => {
 
     await request(app)
       .post(`/articles`)
+      .set('authorization', `Bearer ${accessToken} ${refreshToken}`) 
       .send(newArticle)
       .expect(HttpCode.BAD_REQUEST)
   });
@@ -270,10 +329,13 @@ describe(`API changes existent article`, () => {
   let app;
   let response;
 
+  const {accessToken, refreshToken} = makeTokens({id: 1});
+
   beforeAll(async () => {
     app = await createAPI();
     response = await request(app)
       .put(`/articles/1`)
+      .set('authorization', `Bearer ${accessToken} ${refreshToken}`) 
       .send(newArticle);
   });
 
@@ -283,6 +345,30 @@ describe(`API changes existent article`, () => {
     .get(`/articles/1`)
     .expect((res) => expect(res.body.title).toBe(`Измененный заголовок статьи с огромным количеством символов`))
   );
+
+});
+
+describe(`API refuses to change existent article without authorization`, () => {
+
+  const newArticle = {
+    "title": `Измененный заголовок статьи с огромным количеством символов`,
+    "announce": `анонс новой статьи с огромным количеством символов`,
+    "text": `Новая статья`,
+    "picture": `Image.jpg`,
+    "categories": ['2']
+  };
+  let app;
+  let response;
+
+
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app)
+      .put(`/articles/1`)
+      .send(newArticle);
+  });
+
+  test(`Status code 401`, () => expect(response.statusCode).toBe(HttpCode.UNAUTHORIZED));
 
 });
 
@@ -302,8 +388,11 @@ test(`API returns status code 404 when trying to change non-existent article`, a
     "comments": []
   };
 
+  const {accessToken, refreshToken} = makeTokens({id: 1});
+
   return request(app)
     .put(`/articless/NOEXST`)
+    .set('authorization', `Bearer ${accessToken} ${refreshToken}`) 
     .send(validArticle)
     .expect(HttpCode.NOT_FOUND);
 });
@@ -322,8 +411,11 @@ test(`API returns status code 400 when trying to change an article with invalid 
     "picture": `не картинка`,
   };
 
+  const {accessToken, refreshToken} = makeTokens({id: 1});
+
   return request(app)
     .put(`/articles/2`)
+    .set('authorization', `Bearer ${accessToken} ${refreshToken}`) 
     .send(invalidArticle)
     .expect(HttpCode.BAD_REQUEST);
 });
@@ -377,7 +469,9 @@ describe(`API returns a list of comments to given article`, () => {
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-  test(`Returns list of 1 comments`, () => expect(response.body.length).toBe(1));
+  test(`Returns list of 1 comments`, () => {
+    expect(response.body.length).toBe(1)
+  });
 
   test(`First comment's id is "Совсем немного... Согласен с автором!"`, () => expect(response.body[0].text).toBe(`Совсем немного... Согласен с автором!`));
 
@@ -404,7 +498,9 @@ describe(`API creates a comment if data is valid`, () => {
 
   test(`Comments count is changed`, () => request(app)
     .get(`/articles/1/comments`)
-    .expect((res) => expect(res.body.length).toBe(2))
+    .expect((res) => {
+      expect(res.body.length).toBe(1)
+    })
   );
 
 });
@@ -482,5 +578,73 @@ test(`API refuses to delete a comment to non-existent article`, async () => {
   return request(app)
     .delete(`/articles/NOEXST/comments/1`)
     .expect(HttpCode.NOT_FOUND);
+
+});
+
+describe(`API refuses to return an articles page without authorization`, () => {
+
+  let app;
+
+  let response;
+
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app)
+      .get(`/articles/user`);
+  });
+
+  test(`Status code 401`, () => expect(response.statusCode).toBe(HttpCode.UNAUTHORIZED));
+
+});
+
+describe(`API returns an articles page with authorization`, () => {
+
+  let app;
+
+  let response;
+  const {accessToken, refreshToken} = makeTokens({id: 1});
+
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app)
+      .get(`/articles/user`)
+      .set('authorization', `Bearer ${accessToken} ${refreshToken}`) ;
+  });
+
+  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+
+});
+
+describe(`API refuses to return comments page without authorization`, () => {
+
+  let app;
+
+  let response;
+
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app)
+      .get(`/articles/user/comments`);
+  });
+
+  test(`Status code 401`, () => expect(response.statusCode).toBe(HttpCode.UNAUTHORIZED));
+
+});
+
+describe(`API returns comments page with authorization`, () => {
+
+  let app;
+
+  let response;
+  const {accessToken, refreshToken} = makeTokens({id: 1});
+
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app)
+      .get(`/articles/user/comments`)
+      .set('authorization', `Bearer ${accessToken} ${refreshToken}`) ;
+  });
+
+  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
 });

@@ -18,22 +18,20 @@ class ArticleService {
     const deletedRows = await this._Article.destroy({
       where: {id}
     });
+    await this._Comment.destroy({
+      where: {articleId: id}
+    });
+
     return !!deletedRows;
   }
 
-  async findAll(needComments, userId) {
+  async findAll(needComments) {
     const include = [`categories`];
     if (needComments) {
       include.push(`comments`);
     }
-    let articles;
-    if (userId) {
-      articles = await this._Article.findAll({
-        where: {userId}
-      });
-    } else {
-      articles = await this._Article.findAll({include});
-    }
+
+    const articles = await this._Article.findAll({include});
 
     return articles.map((item) => item.get());
   }
@@ -51,7 +49,7 @@ class ArticleService {
   async findOne(id, needComments) {
     const include = [`categories`];
     if (needComments) {
-      include.push(`comments`);
+      include.push({association: `comments`, include: [`User`]});
     }
     const result = await this._Article.findByPk(id, {include});
     return result;

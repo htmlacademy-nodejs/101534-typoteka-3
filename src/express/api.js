@@ -29,6 +29,13 @@ class API {
     return this._load(`/articles/${id}`);
   }
 
+  dropArticle(id, token) {
+    return this._load(`/articles/${id}`, {
+      method: `DELETE`,
+      headers: {authorization: token}
+    });
+  }
+
   getArticlesByUser(token) {
     return this._load(`/articles/user`, {
       headers: {authorization: token}
@@ -43,6 +50,13 @@ class API {
 
   getComments(id) {
     return this._load(`/articles/${id}/comments`);
+  }
+
+  dropComment(id, token) {
+    return this._load(`/articles/${id}/comments`, {
+      method: `DELETE`,
+      headers: {authorization: token}
+    });
   }
 
   search(query) {

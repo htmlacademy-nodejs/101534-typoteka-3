@@ -16,6 +16,12 @@ class UserService {
     return user;
   }
 
+  async findById(id) {
+    const user = await this._User.findOne({where: {id}});
+    console.log(user.get());
+    return user.get();
+  }
+
   async checkUser(email, password) {
     const user = await this._User.findOne({where: {email}});
     const match = await bcrypt.compare(password, user.password);

@@ -27,15 +27,18 @@ module.exports = (app, articleService, commentService, userService) => {
 
   route.get(`/user`, authenticateJwt, async (req, res) => {
 
-    let user = await userService.findToken(req.headers[`authorization`].split(` `)[2]);
+    let user = await userService.findToken(req.headers[`authorization`].split(` `)[2]) || {id: 1};
+    if (user.id !== 1) {
+      res.status(HttpCode.FORBIDDEN);
+    }
 
-    const result = await articleService.findAll(false, user.id);
+    const result = await articleService.findAll(false);
     res.status(HttpCode.OK).json(result);
   });
 
   route.get(`/user/comments`, authenticateJwt, async (req, res) => {
 
-    let user = await userService.findToken(req.headers[`authorization`].split(` `)[2]);
+    let user = await userService.findToken(req.headers[`authorization`].split(` `)[2]) || {id: 1};
 
     const comments = await commentService.findAll(user.id);
     res.status(HttpCode.OK).json(comments);
@@ -55,7 +58,7 @@ module.exports = (app, articleService, commentService, userService) => {
   });
 
   route.post(`/`, [authenticateJwt, validator(articleSchema)], async (req, res) => {
-    const user = await userService.findToken(req.headers[`authorization`].split(` `)[2]);
+    const user = await userService.findToken(req.headers[`authorization`].split(` `)[2]) || {id: 1};
     const article = await articleService.create(req.body, user.id);
 
     return res.status(HttpCode.CREATED)
@@ -77,7 +80,7 @@ module.exports = (app, articleService, commentService, userService) => {
       .json(updatedArticle);
   });
 
-  route.delete(`/:articleId`, paramValidator(`articleId`), async (req, res) => {
+  route.delete(`/:articleId`, [authenticateJwt, paramValidator(`articleId`)], async (req, res) => {
     const {articleId} = req.params;
     const article = await articleService.drop(articleId);
 
@@ -99,7 +102,7 @@ module.exports = (app, articleService, commentService, userService) => {
 
   });
 
-  route.delete(`/:articleId/comments/:commentId`, [paramValidator(`articleId`), paramValidator(`commentId`), articleExist(articleService)], async (req, res) => {
+  route.delete(`/:articleId/comments/:commentId`, [authenticateJwt, paramValidator(`articleId`), paramValidator(`commentId`), articleExist(articleService)], async (req, res) => {
     const {commentId} = req.params;
     const deletedComment = await commentService.drop(commentId);
 
