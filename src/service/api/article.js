@@ -1,7 +1,7 @@
 'use strict';
 
 const {Router} = require(`express`);
-const {HttpCode} = require(`../../constants`);
+const {HttpCode, ADMIN_ID} = require(`../../constants`);
 const validator = require(`../middlewares/validator`);
 const paramValidator = require(`../middlewares/param-validator`);
 const articleExist = require(`../middlewares/article-exists`);
@@ -28,20 +28,23 @@ module.exports = (app, articleService, commentService, userService) => {
   route.get(`/user`, authenticateJwt, async (req, res) => {
 
     let user = await userService.findToken(req.headers[`authorization`].split(` `)[2]) || {id: 1};
-    if (user.id !== 1) {
-      res.status(HttpCode.FORBIDDEN);
+    if (user.id !== ADMIN_ID) {
+      return res.status(HttpCode.FORBIDDEN);
     }
 
     const result = await articleService.findAll(false);
-    res.status(HttpCode.OK).json(result);
+    return res.status(HttpCode.OK).json(result);
   });
 
   route.get(`/user/comments`, authenticateJwt, async (req, res) => {
 
     let user = await userService.findToken(req.headers[`authorization`].split(` `)[2]) || {id: 1};
+    if (user.id !== ADMIN_ID) {
+      return res.status(HttpCode.FORBIDDEN);
+    }
 
-    const comments = await commentService.findAll(user.id);
-    res.status(HttpCode.OK).json(comments);
+    const comments = await commentService.findAll();
+    return res.status(HttpCode.OK).json(comments);
   });
 
   route.get(`/:articleId`, paramValidator(`articleId`), async (req, res) => {
@@ -59,6 +62,9 @@ module.exports = (app, articleService, commentService, userService) => {
 
   route.post(`/`, [authenticateJwt, validator(articleSchema)], async (req, res) => {
     const user = await userService.findToken(req.headers[`authorization`].split(` `)[2]) || {id: 1};
+    if (user.id !== 1) {
+      return res.status(HttpCode.FORBIDDEN);
+    }
     const article = await articleService.create(req.body, user.id);
 
     return res.status(HttpCode.CREATED)
@@ -102,7 +108,7 @@ module.exports = (app, articleService, commentService, userService) => {
 
   });
 
-  route.delete(`/:articleId/comments/:commentId`, [authenticateJwt, paramValidator(`articleId`), paramValidator(`commentId`), articleExist(articleService)], async (req, res) => {
+  route.delete(`/comments/:commentId`, [authenticateJwt, paramValidator(`commentId`)], async (req, res) => {
     const {commentId} = req.params;
     const deletedComment = await commentService.drop(commentId);
 

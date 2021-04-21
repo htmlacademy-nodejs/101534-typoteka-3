@@ -53,7 +53,7 @@ class API {
   }
 
   dropComment(id, token) {
-    return this._load(`/articles/${id}/comments`, {
+    return this._load(`/articles/comments/${id}`, {
       method: `DELETE`,
       headers: {authorization: token}
     });

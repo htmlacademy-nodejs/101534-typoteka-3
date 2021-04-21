@@ -20,12 +20,21 @@ class CommentService {
     return !!deletedRows;
   }
 
-  async findAll() {
+  async findAll(articleId) {
     const include = [`Article`, `User`];
-    return await this._Comment.findAll({
-      raw: true,
-      include
-    });
+    if (articleId) {
+      return await this._Comment.findAll({
+        raw: true,
+        where: {articleId},
+        include
+      });
+    } else {
+      return await this._Comment.findAll({
+        raw: true,
+        include
+      });
+    }
+
   }
 
 }

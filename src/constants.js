@@ -51,5 +51,6 @@ module.exports = {
       lastName: `Тестов`,
       avatar: `avatar3.jpg`
     }
-  ]
+  ],
+  ADMIN_ID: 1,
 };

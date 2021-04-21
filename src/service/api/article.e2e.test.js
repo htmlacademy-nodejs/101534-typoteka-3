@@ -426,10 +426,13 @@ describe(`API correctly deletes an article`, () => {
 
   let response;
 
+  const {accessToken, refreshToken} = makeTokens({id: 1});
+
   beforeAll(async () => {
     app = await createAPI();
     response = await request(app)
-      .delete(`/articles/2`);
+      .delete(`/articles/2`)
+      .set('authorization', `Bearer ${accessToken} ${refreshToken}`) ;
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
@@ -448,10 +451,23 @@ describe(`API correctly deletes an article`, () => {
 test(`API refuses to delete non-existent article`, async () => {
 
   const app = await createAPI();
+  const {accessToken, refreshToken} = makeTokens({id: 1});
 
   return request(app)
     .delete(`/articles/NOEXST`)
+    .set('authorization', `Bearer ${accessToken} ${refreshToken}`)
     .expect(HttpCode.NOT_FOUND);
+
+});
+
+test(`API refuses to delete an article without authorization`, async () => {
+
+  const app = await createAPI();
+
+  return request(app)
+    .delete(`/articles/NOEXST`)
+    .set('authorization', ``)
+    .expect(HttpCode.UNAUTHORIZED);
 
 });
 
@@ -499,7 +515,7 @@ describe(`API creates a comment if data is valid`, () => {
   test(`Comments count is changed`, () => request(app)
     .get(`/articles/1/comments`)
     .expect((res) => {
-      expect(res.body.length).toBe(1)
+      expect(res.body.length).toBe(2)
     })
   );
 
@@ -544,10 +560,13 @@ describe(`API correctly deletes a comment`, () => {
 
   let response;
 
+  const {accessToken, refreshToken} = makeTokens({id: 1});
+
   beforeAll(async () => {
     app = await createAPI();
     response = await request(app)
-      .delete(`/articles/1/comments/1`);
+      .delete(`/articles/comments/1`)
+      .set('authorization', `Bearer ${accessToken} ${refreshToken}`);
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
@@ -561,12 +580,26 @@ describe(`API correctly deletes a comment`, () => {
 
 });
 
+test(`API refuses to delete comment without authorization`, async () => {
+
+  const app = await createAPI();
+  const {accessToken, refreshToken} = makeTokens({id: 1});
+
+  return request(app)
+    .delete(`/articles/comments/NOEXST`)
+    .set('authorization', ``)
+    .expect(HttpCode.UNAUTHORIZED);
+
+});
+
 test(`API refuses to delete non-existent comment`, async () => {
 
   const app = await createAPI();
+  const {accessToken, refreshToken} = makeTokens({id: 1});
 
   return request(app)
-    .delete(`/articles/1/comments/NOEXST`)
+    .delete(`/articles/comments/NOEXST`)
+    .set('authorization', `Bearer ${accessToken} ${refreshToken}`)
     .expect(HttpCode.NOT_FOUND);
 
 });
@@ -574,9 +607,11 @@ test(`API refuses to delete non-existent comment`, async () => {
 test(`API refuses to delete a comment to non-existent article`, async () => {
 
   const app = await createAPI();
+  const {accessToken, refreshToken} = makeTokens({id: 1});
 
   return request(app)
     .delete(`/articles/NOEXST/comments/1`)
+    .set('authorization', `Bearer ${accessToken} ${refreshToken}`)
     .expect(HttpCode.NOT_FOUND);
 
 });

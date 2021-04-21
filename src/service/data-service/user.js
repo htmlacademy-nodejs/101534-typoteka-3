@@ -18,7 +18,6 @@ class UserService {
 
   async findById(id) {
     const user = await this._User.findOne({where: {id}});
-    console.log(user.get());
     return user.get();
   }
 

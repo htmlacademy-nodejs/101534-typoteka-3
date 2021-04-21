@@ -11,14 +11,15 @@ module.exports = (api) => (
       } catch (error) {
 
         try {
-          await api.refresh(token);
+          const {accessToken, refreshToken} = await api.refresh(token);
+          res.cookie(`accessToken=${accessToken}`, {maxAge: 864000});
+          res.cookie(`refreshToken=${refreshToken}`, {maxAge: 864000});
         } catch (err) {
           console.log(err);
         }
       }
 
     }
-
 
     next();
   }

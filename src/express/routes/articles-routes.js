@@ -51,8 +51,11 @@ articlesRouter.get(`/category/:id`, checkAuth(api), async (req, res) => {
 
 articlesRouter.get(`/add`, checkAuth(api), async (req, res) => {
   const user = res.locals.user;
+  if (!user || user.id !== 1) {
+    return res.redirect(`/login`);
+  }
   const categories = await api.getCategories(true);
-  res.render(`admin/new-post`, {categories, user});
+  return res.render(`admin/new-post`, {categories, user});
 });
 
 articlesRouter.post(`/add`,
