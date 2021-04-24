@@ -4,6 +4,8 @@ const {Router} = require(`express`);
 const mainRouter = new Router();
 const api = require(`../api.js`).getAPI();
 const checkAuth = require(`../middlewares/check-auth`);
+const csrfProtection = require(`../middlewares/csrf`);
+const parseForm = require(`../middlewares/parse-form`);
 
 const multer = require(`multer`);
 const {nanoid} = require(`nanoid`);
@@ -24,6 +26,7 @@ const upload = multer({storage});
 
 const ARTICLES_PER_PAGE = 8;
 
+
 mainRouter.get(`/`, checkAuth(api), async (req, res) => {
   let {page = 1} = req.query;
   page = +page;
@@ -38,9 +41,11 @@ mainRouter.get(`/`, checkAuth(api), async (req, res) => {
   res.render(`main`, {articles, page, totalPages, categories, user});
 });
 
-mainRouter.get(`/register`, (req, res) => res.render(`user/sign-up`));
+mainRouter.get(`/register`, csrfProtection, (req, res) => {
+  res.render(`user/sign-up`, {csrf: req.csrfToken()});
+});
 
-mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
+mainRouter.post(`/register`, parseForm, csrfProtection, upload.single(`avatar`), async (req, res) => {
   const {body, file} = req;
   const avatar = file ? file.filename : null;
   const userData = {
@@ -93,6 +98,9 @@ mainRouter.post(`/login`, upload.none(), async (req, res) => {
 
 mainRouter.get(`/logout`, upload.none(), async (req, res) => {
   await api.logout(`Bearer ${req.cookies.accessToken.split(`=`)[0]} ${req.cookies.refreshToken.split(`=`)[0]}`);
+
+  res.cookie(`accessToken=null`, {maxAge: 0});
+  res.cookie(`refreshToken=null`, {maxAge: 0});
 
   res.redirect(`/login`);
 
