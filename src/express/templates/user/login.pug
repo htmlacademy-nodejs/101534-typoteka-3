@@ -20,3 +20,4 @@ block content
             if errorMessages
               p.form__error-message #{errorMessages}
             button.form__submit-btn.form__submit-btn--log-in.button.button--colored(type='submit') Войти
+            input(type='hidden' name='_csrf' value=`${csrf}`)

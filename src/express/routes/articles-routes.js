@@ -4,6 +4,9 @@ const {Router} = require(`express`);
 const articlesRouter = new Router();
 const api = require(`../api.js`).getAPI();
 const checkAuth = require(`../middlewares/check-auth`);
+const csrfProtection = require(`../middlewares/csrf`);
+const parseForm = require(`../middlewares/parse-form`);
+const {ADMIN_ID} = require(`../../constants`);
 
 const multer = require(`multer`);
 const path = require(`path`);
@@ -49,17 +52,17 @@ articlesRouter.get(`/category/:id`, checkAuth(api), async (req, res) => {
   res.render(`user/articles-by-category`, {articlesByPage, categories, id, name, page, totalPages, user});
 });
 
-articlesRouter.get(`/add`, checkAuth(api), async (req, res) => {
+articlesRouter.get(`/add`, csrfProtection, checkAuth(api), async (req, res) => {
   const user = res.locals.user;
-  if (!user || user.id !== 1) {
+  if (!user || user.id !== ADMIN_ID) {
     return res.redirect(`/login`);
   }
   const categories = await api.getCategories(true);
-  return res.render(`admin/new-post`, {categories, user});
+  return res.render(`admin/new-post`, {categories, user, csrf: req.csrfToken()});
 });
 
 articlesRouter.post(`/add`,
-    [upload.single(`photo`), checkAuth(api)],
+    [upload.single(`photo`), parseForm, csrfProtection, checkAuth(api)],
     async (req, res) => {
       const {body, file} = req;
       const articleData = {
@@ -85,12 +88,12 @@ articlesRouter.post(`/add`,
         }
 
         const categories = await api.getCategories(true);
-        res.render(`admin/new-post`, {articleData, errorMessages, categories, user});
+        res.render(`admin/new-post`, {articleData, errorMessages, categories, user, csrf: req.csrfToken()});
       }
     }
 );
 
-articlesRouter.get(`/edit/:id`, checkAuth(api), async (req, res) => {
+articlesRouter.get(`/edit/:id`, csrfProtection, checkAuth(api), async (req, res) => {
   const {id} = req.params;
   const {user} = res.locals;
 
@@ -100,10 +103,10 @@ articlesRouter.get(`/edit/:id`, checkAuth(api), async (req, res) => {
   ]);
   const route = `articles/edit/${id}`;
 
-  res.render(`admin/new-post`, {articleData, comments, route, user});
+  res.render(`admin/new-post`, {articleData, comments, route, user, csrf: req.csrfToken()});
 });
 
-articlesRouter.post(`/edit/:id`, [upload.single(`photo`), checkAuth(api)], async (req, res) => {
+articlesRouter.post(`/edit/:id`, [upload.single(`photo`), parseForm, csrfProtection, checkAuth(api)], async (req, res) => {
   const {id} = req.params;
   const {user} = res.locals;
 
@@ -123,7 +126,7 @@ articlesRouter.post(`/edit/:id`, [upload.single(`photo`), checkAuth(api)], async
     res.redirect(`/my`);
   } catch (e) {
     const errorMessages = e.response.data.message;
-    res.render(`admin/new-post`, {articleData, errorMessages, user});
+    res.render(`admin/new-post`, {articleData, errorMessages, user, csrf: req.csrfToken()});
   }
 
 });

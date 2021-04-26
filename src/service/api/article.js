@@ -62,7 +62,7 @@ module.exports = (app, articleService, commentService, userService) => {
 
   route.post(`/`, [authenticateJwt, validator(articleSchema)], async (req, res) => {
     const user = await userService.findToken(req.headers[`authorization`].split(` `)[2]) || {id: 1};
-    if (user.id !== 1) {
+    if (user.id !== ADMIN_ID) {
       return res.status(HttpCode.FORBIDDEN);
     }
     const article = await articleService.create(req.body, user.id);

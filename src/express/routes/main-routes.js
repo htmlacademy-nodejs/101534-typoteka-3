@@ -45,7 +45,7 @@ mainRouter.get(`/register`, csrfProtection, (req, res) => {
   res.render(`user/sign-up`, {csrf: req.csrfToken()});
 });
 
-mainRouter.post(`/register`, parseForm, csrfProtection, upload.single(`avatar`), async (req, res) => {
+mainRouter.post(`/register`, upload.single(`avatar`), parseForm, csrfProtection, async (req, res) => {
   const {body, file} = req;
   const avatar = file ? file.filename : null;
   const userData = {
@@ -65,14 +65,18 @@ mainRouter.post(`/register`, parseForm, csrfProtection, upload.single(`avatar`),
     if (e.response && e.response.data) {
       errorMessages = e.response.data.message;
     }
-    res.render(`user/sign-up`, {userData, errorMessages});
+    res.render(`user/sign-up`, {userData, errorMessages, csrf: req.csrfToken()});
   }
 
 });
 
-mainRouter.get(`/login`, (req, res) => res.render(`user/login`));
+mainRouter.get(`/login`, csrfProtection, (req, res) => {
+  res.render(`user/login`, {
+    csrf: req.csrfToken()
+  });
+});
 
-mainRouter.post(`/login`, upload.none(), async (req, res) => {
+mainRouter.post(`/login`, upload.none(), parseForm, csrfProtection, async (req, res) => {
   const {body} = req;
   const userData = {
     email: body.email,
@@ -91,7 +95,7 @@ mainRouter.post(`/login`, upload.none(), async (req, res) => {
     if (e.response && e.response.data) {
       errorMessages = e.response.data.message;
     }
-    res.render(`user/login`, {userData, errorMessages});
+    res.render(`user/login`, {userData, errorMessages, csrf: req.csrfToken()});
   }
 
 });
