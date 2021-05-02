@@ -42,6 +42,13 @@ class CategoryService {
       name: data.name
     });
   }
+
+  async modify(name, id) {
+    return await this._Category.update(
+        {name},
+        {where: {id}}
+    );
+  }
 }
 
 module.exports = CategoryService;

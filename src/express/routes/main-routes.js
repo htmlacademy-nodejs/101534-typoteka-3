@@ -174,5 +174,27 @@ mainRouter.post(`/categories/add`, [upload.none(), checkAuth(api)], async (req, 
 
 });
 
+mainRouter.post(`/categories/:id/modify`, [upload.none(), checkAuth(api)], async (req, res) => {
+  const user = res.locals.user;
+  const {id} = req.params;
+  if (!user || user.id !== ADMIN_ID) {
+    res.redirect(`/login`);
+  }
+
+  try {
+    await api.modifyCategory({name: req.body.name}, `Bearer ${req.cookies.accessToken.split(`=`)[0]} ${req.cookies.refreshToken.split(`=`)[0]}`, id);
+    const categories = await api.getCategoriesByUser(user, `Bearer ${req.cookies.accessToken.split(`=`)[0]} ${req.cookies.refreshToken.split(`=`)[0]}`);
+    res.render(`admin/all-categories`, {categories, user});
+  } catch (e) {
+    let errorMessages;
+    if (e.response && e.response.data) {
+      errorMessages = e.response.data.message;
+    }
+    const categories = await api.getCategoriesByUser(user, `Bearer ${req.cookies.accessToken.split(`=`)[0]} ${req.cookies.refreshToken.split(`=`)[0]}`);
+    res.render(`admin/all-categories`, {categories, user, errorMessages});
+  }
+
+});
+
 
 module.exports = mainRouter;

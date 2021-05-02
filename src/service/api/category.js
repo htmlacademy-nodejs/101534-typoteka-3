@@ -25,6 +25,13 @@ module.exports = (app, service, userService) => {
       .json(category);
   });
 
+  route.put(`/modify/:id`, [authenticateJwt, validator(categorySchema)], async (req, res) => {
+    const {id} = req.params;
+    const category = await service.modify(req.body.name, id);
+    res.status(HttpCode.OK)
+      .json(category);
+  });
+
   route.get(`/user/:id`, authenticateJwt, async (req, res) => {
     let user = await userService.findToken(req.headers[`authorization`].split(` `)[2]) || {id: 1};
     if (user.id !== ADMIN_ID) {

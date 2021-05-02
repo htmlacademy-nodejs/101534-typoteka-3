@@ -81,6 +81,14 @@ class API {
     });
   }
 
+  async modifyCategory(data, token, id) {
+    return this._load(`/categories/modify/${id}`, {
+      method: `PUT`,
+      data,
+      headers: {authorization: token}
+    });
+  }
+
   async createArticle(data, token) {
     return this._load(`/articles`, {
       method: `POST`,

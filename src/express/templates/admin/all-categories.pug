@@ -18,10 +18,11 @@ block content
       ul.category__list
         each category in categories
           li.category__list-item
-            form(action='#' method='POST')
-              input(id=`modify-form-category-`+category.id type='text' name=`category-1`+category.id value=category.name)
-              label(for=`modify-form-category-#{category.id}`)
+            form(action=`/categories/${category.id}/modify` method='POST' enctype='multipart/form-data')
+              input(id=`modify-form-category-`+category.id type='text' name='name' value=category.name)
+              label(for=`modify-form-category-${category.id}`)
                 span.visually-hidden Редактировать категорию
               button.category__button.button.button--category(type='submit') Сохранить
-              button.category__button.button.button--category(type='button') Удалить
+            form(action=`/categories/${category.id}/delete` method='POST')
+              button.category__button.button.button--category(type='submit') Удалить
 
