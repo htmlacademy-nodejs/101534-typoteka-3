@@ -5,6 +5,7 @@ const {HttpCode, ADMIN_ID} = require(`../../constants`);
 const authenticateJwt = require(`../middlewares/authenticate-jwt`);
 const validator = require(`../middlewares/validator`);
 const categoryExist = require(`../middlewares/category-exist`);
+const categoryisEmpty = require(`../middlewares/category-is-empty`);
 const categorySchema = require(`../schema/category-schema`);
 
 const route = new Router();
@@ -25,9 +26,16 @@ module.exports = (app, service, userService) => {
       .json(category);
   });
 
-  route.put(`/modify/:id`, [authenticateJwt, validator(categorySchema)], async (req, res) => {
+  route.put(`/:id`, [authenticateJwt, validator(categorySchema)], async (req, res) => {
     const {id} = req.params;
     const category = await service.modify(req.body.name, id);
+    res.status(HttpCode.OK)
+      .json(category);
+  });
+
+  route.delete(`/:id`, [authenticateJwt, categoryisEmpty(service)], async (req, res) => {
+    const {id} = req.params;
+    const category = await service.drop(id);
     res.status(HttpCode.OK)
       .json(category);
   });

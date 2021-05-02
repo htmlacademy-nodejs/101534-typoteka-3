@@ -29,6 +29,23 @@ class CategoryService {
     }
   }
 
+  async countByCategory(id) {
+    const result = await this._Category.findAll({
+      where: {id},
+      attributes: [
+        [Sequelize.fn(`COUNT`, Sequelize.col(`article_categories`, `CategoryId`)), `count`]
+      ],
+      group: [Sequelize.col(`Category.id`)],
+      include: [{
+        model: this._ArticleCategory,
+        as: `article_categories`,
+        attributes: []
+      }]
+    });
+    const {count} = result.map((it) => it.get())[0];
+    return +count;
+  }
+
   async findByUser() {
     return await this._Category.findAll({raw: true});
   }
@@ -48,6 +65,14 @@ class CategoryService {
         {name},
         {where: {id}}
     );
+  }
+
+  async drop(id) {
+    const deletedRows = await this._Category.destroy({
+      where: {id}
+    });
+
+    return !!deletedRows;
   }
 }
 

@@ -82,9 +82,16 @@ class API {
   }
 
   async modifyCategory(data, token, id) {
-    return this._load(`/categories/modify/${id}`, {
+    return this._load(`/categories/${id}`, {
       method: `PUT`,
       data,
+      headers: {authorization: token}
+    });
+  }
+
+  async deleteCategory(data, token) {
+    return this._load(`/categories/${data.id}`, {
+      method: `DELETE`,
       headers: {authorization: token}
     });
   }

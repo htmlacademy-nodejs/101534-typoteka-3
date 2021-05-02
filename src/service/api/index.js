@@ -23,7 +23,7 @@ const app = new Router();
 defineModels(sequelize);
 
 const init = async () => {
-  category(app, new CategoryService(sequelize), new UserService(sequelize));
+  category(app, new CategoryService(sequelize), new UserService(sequelize), new ArticleService(sequelize));
   search(app, new SearchService(sequelize));
   article(app, new ArticleService(sequelize), new CommentService(sequelize), new UserService(sequelize));
   user(app, new UserService(sequelize));
