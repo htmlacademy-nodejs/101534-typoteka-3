@@ -9,11 +9,23 @@ header.header
           a.header__registration(href='/register') Регистрация
         li.header__list-item
           a.header__enter(href='/login') Вход с паролем
-  if user
+  if user && !isAdmin
     nav.header__nav
       ul.header__nav-list
         li.header__list-item
           p #{user.firstName} #{user.lastName}
         li.header__list-item
           a.header__exit(href='/logout') Выйти
+  if isAdmin
+    button.button.button--colored.header__button-new
+      a(href='/articles/add') Новая запись
+    .header__dropdown
+      a.button.button--burger.header__burger(href='#') Открыть меню
+      ul.navigation.header__navigation
+        li.navigation__item
+          a(href='/my') Публикации
+        li.navigation__item
+          a(href='/categories') Категории
+        li.navigation__item
+          a(href='/my/comments') Комментарии
   a.header__search.button.button--search(href='#' aria-label='поиск по сайту')

@@ -5,11 +5,16 @@ block content
     section.main-page__category.category
       h1.category__title Категории
       .category__add-form
-        form(action='#' method='POST')
-          input#add-form-add-category(type='text' name='add-category' placeholder='Новая категория')
+        form(action='/categories/add' method='POST' enctype='multipart/form-data')
+          input#add-form-add-category(type='text' name='name' placeholder='Новая категория')
           label(for='add-form-add-category')
             span.visually-hidden Добавить категорию
           button.category__button.button.button--category(type='submit') Добавить
+        if errorMessages           
+          .form__validation-error
+            ul.form__errors
+              each error in errorMessages
+                li.form__error #{Object.values(error)}
       ul.category__list
         each category in categories
           li.category__list-item

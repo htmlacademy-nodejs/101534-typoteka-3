@@ -6,6 +6,7 @@ const api = require(`../api.js`).getAPI();
 const checkAuth = require(`../middlewares/check-auth`);
 const csrfProtection = require(`../middlewares/csrf`);
 const parseForm = require(`../middlewares/parse-form`);
+const {ADMIN_ID} = require(`../../constants`);
 
 const multer = require(`multer`);
 const {nanoid} = require(`nanoid`);
@@ -38,7 +39,11 @@ mainRouter.get(`/`, checkAuth(api), async (req, res) => {
   const categories = await api.getCategories(true);
   const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
   const user = res.locals.user;
-  res.render(`main`, {articles, page, totalPages, categories, user});
+  let isAdmin = false;
+  if (user && user.id === ADMIN_ID) {
+    isAdmin = true;
+  }
+  res.render(`main`, {articles, page, totalPages, categories, user, isAdmin});
 });
 
 mainRouter.get(`/register`, csrfProtection, (req, res) => {
@@ -137,13 +142,34 @@ mainRouter.get(`/search`, checkAuth(api),
 mainRouter.get(`/categories`, checkAuth(api), async (req, res) => {
   const user = res.locals.user;
   if (!user) {
-    res.redirect(`/login`);
+    return res.redirect(`/login`);
   }
   try {
     const categories = await api.getCategoriesByUser(user, `Bearer ${req.cookies.accessToken.split(`=`)[0]} ${req.cookies.refreshToken.split(`=`)[0]}`);
+    return res.render(`admin/all-categories`, {categories, user});
+  } catch (e) {
+    return res.redirect(`/login`);
+  }
+
+});
+
+mainRouter.post(`/categories/add`, [upload.none(), checkAuth(api)], async (req, res) => {
+  const user = res.locals.user;
+  if (!user || user.id !== ADMIN_ID) {
+    res.redirect(`/login`);
+  }
+
+  try {
+    await api.createCategory(req.body, `Bearer ${req.cookies.accessToken.split(`=`)[0]} ${req.cookies.refreshToken.split(`=`)[0]}`);
+    const categories = await api.getCategoriesByUser(user, `Bearer ${req.cookies.accessToken.split(`=`)[0]} ${req.cookies.refreshToken.split(`=`)[0]}`);
     res.render(`admin/all-categories`, {categories, user});
   } catch (e) {
-    res.redirect(`/login`);
+    let errorMessages;
+    if (e.response && e.response.data) {
+      errorMessages = e.response.data.message;
+    }
+    const categories = await api.getCategoriesByUser(user, `Bearer ${req.cookies.accessToken.split(`=`)[0]} ${req.cookies.refreshToken.split(`=`)[0]}`);
+    res.render(`admin/all-categories`, {categories, user, errorMessages});
   }
 
 });

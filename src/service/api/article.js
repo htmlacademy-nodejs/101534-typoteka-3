@@ -37,14 +37,18 @@ module.exports = (app, articleService, commentService, userService) => {
   });
 
   route.get(`/user/comments`, authenticateJwt, async (req, res) => {
-
-    let user = await userService.findToken(req.headers[`authorization`].split(` `)[2]) || {id: 1};
-    if (user.id !== ADMIN_ID) {
-      return res.status(HttpCode.FORBIDDEN);
+    try {
+      let user = await userService.findToken(req.headers[`authorization`].split(` `)[2]) || {id: 1};
+      if (user.id !== ADMIN_ID) {
+        return res.status(HttpCode.FORBIDDEN);
+      }
+      const comments = await commentService.findAll();
+      return res.status(HttpCode.OK).json(comments);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
     }
 
-    const comments = await commentService.findAll();
-    return res.status(HttpCode.OK).json(comments);
+
   });
 
   route.get(`/:articleId`, paramValidator(`articleId`), async (req, res) => {

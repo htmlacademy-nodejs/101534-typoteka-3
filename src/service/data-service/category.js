@@ -25,14 +25,22 @@ class CategoryService {
       });
       return result.map((it) => it.get());
     } else {
-      return this._Category.findAll({raw: true});
+      return await this._Category.findAll({raw: true});
     }
   }
 
   async findByUser() {
+    return await this._Category.findAll({raw: true});
+  }
 
-    return this._Category.findAll({raw: true});
+  async findByName(name) {
+    return await this._Category.findOne({where: {name}});
+  }
 
+  async create(data) {
+    return await this._Category.create({
+      name: data.name
+    });
   }
 }
 

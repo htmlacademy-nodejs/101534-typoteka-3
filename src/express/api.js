@@ -73,6 +73,14 @@ class API {
     });
   }
 
+  async createCategory(data, token) {
+    return this._load(`/categories/add`, {
+      method: `POST`,
+      data,
+      headers: {authorization: token}
+    });
+  }
+
   async createArticle(data, token) {
     return this._load(`/articles`, {
       method: `POST`,
