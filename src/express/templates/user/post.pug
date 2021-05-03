@@ -39,7 +39,7 @@ block content
                 li.comments__comment
                   if comment.User.avatar
                     .comments__avatar.avatar
-                      img(src=`img/${comment.User.avatar}` alt='аватар пользователя')
+                      img(src=`img/avatars/${comment.User.avatar}` alt='аватар пользователя')
                   .comments__text
                     .comments__head
                       p #{comment.User.firstName} #{comment.User.lastName}•
@@ -52,7 +52,7 @@ block content
               form(action=`/articles/${article.id}/comments` method='POST' enctype='multipart/form-data')
                 if user.avatar
                   .comments__avatar.avatar
-                    img(src=`img/${user.avatar}` alt='аватар пользователя')
+                    img(src=`img/avatars/${user.avatar}` alt='аватар пользователя')
                 label
                   textarea(rows='1' name='text' required='true' placeholder='Присоединиться к обсуждению')
                 button.comments__button.button.button--colored(type='submit') Опубликовать

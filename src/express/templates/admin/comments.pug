@@ -15,7 +15,7 @@ block content
             li.publication__list-item
               .publication__header
                 if comment['User.avatar']
-                  img.publication__list-image(src=`img/${comment['User.avatar']}` width='20' height='20' alt='Аватар пользователя')
+                  img.publication__list-image(src=`img/avatars/${comment['User.avatar']}` width='20' height='20' alt='Аватар пользователя')
                 b.publication__list-name #{comment['User.firstName']} #{comment['User.lastName']} 
                 time.publication__item-time(datetime=`#{formatDate(comment.createdAt)}`) 
                   | #{formatDate(comment.createdAt)}

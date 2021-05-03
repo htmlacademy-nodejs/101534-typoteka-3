@@ -8,7 +8,7 @@ module.exports = Joi.object({
         .required()
         .messages({
           'string.email': `Введите корректный адрес электронной почты`,
-          'string.required': `Поле "e-mail" обязательно для заполнения`,
+          'any.required': `Поле "e-mail" обязательно для заполнения`,
         }),
 
   firstName: Joi.string()
@@ -16,7 +16,7 @@ module.exports = Joi.object({
         .required()
         .messages({
           'string.pattern.base': `Поле "Имя" должно содержать только буквы`,
-          'string.required': `Поле "Имя" обязательно для заполнения`,
+          'any.required': `Поле "Имя" обязательно для заполнения`,
         }),
 
   lastName: Joi.string()
@@ -24,7 +24,7 @@ module.exports = Joi.object({
         .required()
         .messages({
           'string.pattern.base': `Поле "Фамилия" должно содержать только буквы`,
-          'string.required': `Поле "Фамилия" обязательно для заполнения`,
+          'any.required': `Поле "Фамилия" обязательно для заполнения`,
         }),
 
   password: Joi.string()
@@ -32,7 +32,7 @@ module.exports = Joi.object({
         .required()
         .messages({
           'string.min': `Минимальная длина пароля - 6 символов`,
-          'string.required': `Поле "Пароль" обязательно для заполнения`,
+          'any.required': `Поле "Пароль" обязательно для заполнения`,
         }),
 
   passwordRepeat: Joi.any()

@@ -7,7 +7,13 @@ module.exports = Joi.object({
   text: Joi.string()
         .min(20)
         .max(1000)
-        .required(),
-  userId: Joi.number()
+    .required()
+    .messages({
+      'string.min': `Минимум 20 символов`,
+      'string.max': `Максимум 1000 символов`,
+      'any.required': `Поле обязательно для заполнения`,
+    }),
+  userId: Joi.number(),
+
 
 });

@@ -71,7 +71,7 @@ articlesRouter.post(`/add`,
         title: body.title,
         announce: body.announcement,
         text: body[`full-text`],
-        categories: [...body.categories]
+        categories: body.categories
       };
       const user = res.locals.user;
 

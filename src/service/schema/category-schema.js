@@ -10,6 +10,6 @@ module.exports = Joi.object({
         .messages({
           'string.min': `Минимум 5 символов`,
           'string.max': `Максимум 30 символов`,
-          'string.required': `Поле обязательно для заполнения`,
+          'any.required': `Поле обязательно для заполнения`,
         }),
 });
