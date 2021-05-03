@@ -37,6 +37,20 @@ class CommentService {
 
   }
 
+  async findRecent() {
+    const include = [`Article`, `User`];
+
+    return await this._Comment.findAll({
+      raw: true,
+      include,
+      order: [
+        [`createdAt`, `DESC`]
+      ],
+      limit: 4
+    });
+
+  }
+
 }
 
 module.exports = CommentService;

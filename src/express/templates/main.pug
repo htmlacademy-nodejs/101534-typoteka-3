@@ -41,27 +41,18 @@ block content
         h2.last__name
           | Последние комментарии 
           span.last__icon.last__icon--cloud
-        ul.last__list
-          li.last__list-item
-            img.last__list-image(src='img/avatar-small-1.png' width='20' height='20' alt='Аватар пользователя')
-            b.last__list-name Анна Артамонова
-            a.last__list-link(href='#')
-              | Сервис аренды жилья Airbnb стал глобальным партнером Международного
-              | олимпийского комитета
-              | (МОК) на девять лет, в течение которых пройдет пять Олимпиад, в том числе в Токио в 2020 году.
-          li.last__list-item
-            img.last__list-image(src='img/avatar-small-2.png' width='20' height='20' alt='Аватар пользователя')
-            b.last__list-name Александр Петров
-            a.last__list-link(href='#')
-              | Главреды «Дождя», Forbes и других СМИ попросили Роскомнадзор
-              | разъяснить штрафы за ссылки на
-              | сайты с матом
-          li.last__list-item.last__list-item--end
-            img.last__list-image(src='img/avatar-small-3.png' width='20' height='20' alt='Аватар пользователя')
-            b.last__list-name Игорь Шманский
-            a.last__list-link(href='#')
-              | Что-то все электрокары в последнее время все на одно лицо
-              | делаются))
+        if comments
+          ul.last__list
+            each comment in comments
+              li.last__list-item
+                if comment['User.avatar']
+                  img.last__list-image(src=`img/avatars/${comment['User.avatar']}` width='20' height='20' alt='Аватар пользователя')
+                b.last__list-name #{comment['User.firstName']} #{comment['User.lastName']}
+                a.last__list-link(href=`articles/${comment['Article.id']}`)
+                  | #{formatAnnounce(comment.text)}
+        if !comments
+          p 
+            | Здесь ничего нет
     section.main-page__list.preview
       if articles
         h2.visually-hidden Список превью статей

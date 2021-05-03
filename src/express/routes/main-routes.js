@@ -34,17 +34,19 @@ mainRouter.get(`/`, checkAuth(api), async (req, res) => {
   const limit = ARTICLES_PER_PAGE;
   const offset = (page - 1) * ARTICLES_PER_PAGE;
 
-
-  const {count, articles} = await api.getArticles({limit, offset});
-  const categories = await api.getCategories(true);
-  const popular = await api.getPopularArticles(true);
+  let [{count, articles}, categories, popular, comments] = await Promise.all([
+    api.getArticles({limit, offset}),
+    api.getCategories(true),
+    api.getPopularArticles(true),
+    api.getRecentComments()
+  ]);
   const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
   const user = res.locals.user;
   let isAdmin = false;
   if (user && user.id === ADMIN_ID) {
     isAdmin = true;
   }
-  res.render(`main`, {articles, page, totalPages, categories, user, isAdmin, popular});
+  res.render(`main`, {articles, page, totalPages, categories, user, isAdmin, popular, comments});
 });
 
 mainRouter.get(`/register`, csrfProtection, (req, res) => {

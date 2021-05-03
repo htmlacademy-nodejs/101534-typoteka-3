@@ -56,6 +56,10 @@ class API {
     return this._load(`/articles/${id}/comments`);
   }
 
+  getRecentComments() {
+    return this._load(`/articles/comments`);
+  }
+
   dropComment(id, token) {
     return this._load(`/articles/comments/${id}`, {
       method: `DELETE`,

@@ -57,6 +57,13 @@ module.exports = (app, articleService, commentService, userService) => {
 
   });
 
+  route.get(`/comments`, async (req, res) => {
+
+    const comments = await commentService.findRecent();
+    return res.status(HttpCode.OK).json(comments);
+
+  });
+
   route.get(`/:articleId`, paramValidator(`articleId`), async (req, res) => {
     const {articleId} = req.params;
     const article = await articleService.findOne(articleId, true);
