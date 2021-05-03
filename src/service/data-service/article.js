@@ -31,9 +31,37 @@ class ArticleService {
       include.push(`comments`);
     }
 
-    const articles = await this._Article.findAll({include});
+    const articles = await this._Article.findAll({
+      include,
+      order: [
+        [`id`, `DESC`]
+      ],
+    });
 
     return articles.map((item) => item.get());
+  }
+
+  async findPopular() {
+    const include = [`comments`];
+
+    const articles = await this._Article.findAll({
+      include,
+      attributes: [
+        `id`,
+        `announce`
+      ],
+    });
+
+    const popular = articles.map((item) => item.get())
+      .filter((el) => {
+        return el.comments.length > 0;
+      });
+    const sorted = popular
+      .sort((a, b) => {
+        return b.comments.length - a.comments.length;
+      }).slice(0, 4);
+
+    return sorted;
   }
 
   async findPage({limit, offset}) {
@@ -41,6 +69,9 @@ class ArticleService {
       limit,
       offset,
       include: [`categories`, `comments`],
+      order: [
+        [`id`, `DESC`]
+      ],
       distinct: true
     });
     return {count, articles: rows};

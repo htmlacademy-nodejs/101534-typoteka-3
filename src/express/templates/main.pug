@@ -1,6 +1,14 @@
 extends layout.pug
 
 block content
+  -
+    const formatAnnounce = (text) => {
+      if (text.length <= 100) {
+        return text
+      } else {
+        return text.slice(0, 100) + `...`;
+      }
+    }
   main.main-page
     h1.visually-hidden Главная страница личного блога Типотека
     p
@@ -19,28 +27,16 @@ block content
         h2.hot__name
           | Самое обсуждаемое 
           span.hot__icon.hot__icon--fire
-        ul.hot__list
-          li.hot__list-item
-            a.hot__list-link(href='#')
-              | Билл Гейтс впервые за два года возглавил рейтинг самых богатых людей
-              | мира по версии Bloomberg 
-              sup.hot__link-sup 12
-          li.hot__list-item
-            a.hot__list-link(href='#')
-              | Сервис для аналитики Telegram-чатов Combot попал под блокировку из-за
-              | информации на служебной 
-              sup.hot__link-sup 15
-              |  странице
-          li.hot__list-item.hot__list-item--margin
-            a.hot__list-link(href='#')
-              | Модель Кайли Дженнер продаст 51% своей компании Kylie Cosmetics
-              | владельцу Factor за $600 млн 
-              sup.hot__link-sup 52
-          li.hot__list-item.hot__list-item--end
-            a.hot__list-link(href='#')
-              | Tesla получила 146 тысяч предзаказов на электрический пикап Cybertruck
-              | за двое суток 
-              sup.hot__link-sup 153
+        if popular
+          ul.hot__list
+            each p in popular 
+              li.hot__list-item
+                a.hot__list-link(href=`/articles/${p.id}`)
+                  | #{formatAnnounce(p.announce)}
+                  sup.hot__link-sup #{p.comments.length}
+        if !popular
+          p 
+            | Здесь ничего нет
       section.main-page__last.last
         h2.last__name
           | Последние комментарии 
@@ -67,24 +63,28 @@ block content
               | Что-то все электрокары в последнее время все на одно лицо
               | делаются))
     section.main-page__list.preview
-      h2.visually-hidden Список превью статей
-      ul.preview__list
-        each article in articles
-          li(class=(article.picture ? 'preview__item' : 'preview__item preview__item--noimage'))    
-            ul.preview__breadcrumbs
-              each category in article.categories
-                li.preview__breadcrumbs-item
-                  a.preview__breadcrumbs-link(href='/articles/category/'+category.id) #{category.name}
-            .preview__background
-              img.preview__background-image(src=`img/${article.picture}` width='460' height='240')
-            time.preview__time  #{article.createdDate}
-            h3.preview__name
-              a.preview__name-link(href=`/articles/${article.id}`) #{article.title}
-            p.preview__text
-              | #{article.announce}
-            if article.comments
-              a.preview__comment(href=`/articles/${article.id}`)
-                | Комментарии 
-                span.preview__cloud
-                b.preview__comment-count #{article.comments.length}
+      if articles
+        h2.visually-hidden Список превью статей
+        ul.preview__list
+          each article in articles
+            li(class=(article.picture ? 'preview__item' : 'preview__item preview__item--noimage'))    
+              ul.preview__breadcrumbs
+                each category in article.categories
+                  li.preview__breadcrumbs-item
+                    a.preview__breadcrumbs-link(href='/articles/category/'+category.id) #{category.name}
+              .preview__background
+                img.preview__background-image(src=`img/${article.picture}` width='460' height='240')
+              time.preview__time  #{article.createdDate}
+              h3.preview__name
+                a.preview__name-link(href=`/articles/${article.id}`) #{article.title}
+              p.preview__text
+                | #{article.announce}
+              if article.comments
+                a.preview__comment(href=`/articles/${article.id}`)
+                  | Комментарии 
+                  span.preview__cloud
+                  b.preview__comment-count #{article.comments.length}
+      if !articles
+        .main-page__empty-wrapper
+          p.main-page__empty-text Здесь пока пусто!
   +pagination(page, totalPages, 2, `?`)   

@@ -25,6 +25,12 @@ module.exports = (app, articleService, commentService, userService) => {
     res.status(HttpCode.OK).json(result);
   });
 
+  route.get(`/popular`, async (req, res) => {
+    const result = await articleService.findPopular();
+
+    res.status(HttpCode.OK).json(result);
+  });
+
   route.get(`/user`, authenticateJwt, async (req, res) => {
 
     let user = await userService.findToken(req.headers[`authorization`].split(` `)[2]) || {id: 1};

@@ -29,6 +29,10 @@ class API {
     return this._load(`/articles/${id}`);
   }
 
+  getPopularArticles() {
+    return this._load(`/articles/popular`);
+  }
+
   dropArticle(id, token) {
     return this._load(`/articles/${id}`, {
       method: `DELETE`,
