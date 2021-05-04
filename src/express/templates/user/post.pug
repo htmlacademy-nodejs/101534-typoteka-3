@@ -2,9 +2,18 @@ extends ../layout.pug
 
 block content
   -
-    const formatDate = (dateString) => {
-      const date = new Date(dateString);
-      return date.toLocaleString();
+    const formatDate = (date, needTime) => {
+      const newdate = new Date(date);
+      const formatMonth = (m) => {
+        if (m < 10) {
+          return `0${m}`;
+        }
+        return m;
+      };
+      if (needTime) {
+        return `${newdate.getUTCDate()}.${formatMonth(newdate.getMonth() + 1)}.${newdate.getUTCFullYear()} ${newdate.getHours()}:${newdate.getMinutes()}`;
+      }
+      return `${newdate.getUTCDate()}.${formatMonth(newdate.getMonth() + 1)}.${newdate.getUTCFullYear()}`;
     }
   main
     section.post
@@ -43,7 +52,7 @@ block content
                   .comments__text
                     .comments__head
                       p #{comment.User.firstName} #{comment.User.lastName}•
-                      time.comments__date(datetime='2019-03-21T20:33') #{formatDate(comment.createdAt)}
+                      time.comments__date(datetime='2019-03-21T20:33') #{formatDate(comment.createdAt, true)}
                     p.comments__message #{comment.text}
           else
             h2.comments__title.title.title--middle Комментарии отсутствуют
