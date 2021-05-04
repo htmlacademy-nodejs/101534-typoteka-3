@@ -30,19 +30,10 @@ class CategoryService {
   }
 
   async countByCategory(id) {
-    const result = await this._Category.findAll({
-      where: {id},
-      attributes: [
-        [Sequelize.fn(`COUNT`, Sequelize.col(`article_categories`, `CategoryId`)), `count`]
-      ],
-      group: [Sequelize.col(`Category.id`)],
-      include: [{
-        model: this._ArticleCategory,
-        as: `article_categories`,
-        attributes: []
-      }]
+    const result = await this._ArticleCategory.findAll({
+      where: {categoryId: id}
     });
-    const {count} = result.map((it) => it.get())[0];
+    const count = result.map((it) => it.get()).length;
     return +count;
   }
 

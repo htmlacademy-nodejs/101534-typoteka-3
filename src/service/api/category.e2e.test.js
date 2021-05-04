@@ -42,7 +42,7 @@ const mockArticles = JSON.stringify([
     "announce": `Ёлки — это не просто красивое дерево. Это прочная древесина. Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле?`,
     "text": `Медведев сейчас так хорош, что обводит даже одноручным бэкхендом. Собрать камни бесконечности легко, если вы прирожденный герой. Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике. Как начать действовать? Для начала просто соберитесь. Это один из лучших рок-музыкантов. Леброн пробежал половину площадки с мячом в руках и забил сверху. Разве это не пробежка?`,
     "categories": [
-      `Музыка`
+      `Путешествия`
     ],
     "comments": [
       {
@@ -312,7 +312,7 @@ describe(`API correctly deletes a category`, () => {
   	await initDB(mockDB, mockCategories, mockArticles, []);
     category(app, new DataService(mockDB));
     response = await request(app)
-      .delete(`/categories/3`)
+      .delete(`/categories/4`)
       .set('authorization', `Bearer ${accessToken} ${refreshToken}`) 
   });
 
@@ -335,11 +335,35 @@ describe(`API refuses to delete a category without authorization`, () => {
   	await initDB(mockDB, mockCategories, mockArticles, []);
     category(app, new DataService(mockDB));
     response = await request(app)
-      .delete(`/categories/3`)
+      .delete(`/categories/4`)
       .set('authorization', `Bearer `) 
   });
 
   test(`Status code 401`, () => expect(response.statusCode).toBe(HttpCode.UNAUTHORIZED));
+  test(`Categories count is not changed`, () => request(app)
+    .get(`/categories`)
+    .expect((res) => expect(res.body.length).toBe(4))
+  );
+
+});
+
+describe(`API refuses to delete a non-empty category`, () => {
+
+  let response;
+  let app;
+
+  beforeAll(async () => {
+    const {accessToken, refreshToken} = makeTokens({id: 1});
+  	app = express();
+  	app.use(express.json());
+  	await initDB(mockDB, mockCategories, mockArticles, []);
+    category(app, new DataService(mockDB));
+    response = await request(app)
+      .delete(`/categories/3`)
+      .set('authorization', `Bearer ${accessToken} ${refreshToken}`) 
+  });
+
+  test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
   test(`Categories count is not changed`, () => request(app)
     .get(`/categories`)
     .expect((res) => expect(res.body.length).toBe(4))
