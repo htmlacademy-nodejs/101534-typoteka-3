@@ -9,6 +9,16 @@ block content
         return text.slice(0, 100) + `...`;
       }
     }
+    const formatDate = (date) => {
+      const newdate = new Date(date);
+      const formatMonth = (m) => {
+        if (m < 10) {
+          return `0${m}`;
+        }
+        return m;
+      };
+      return `${newdate.getUTCDate()}.${formatMonth(newdate.getMonth() + 1)}.${newdate.getUTCFullYear()}`//new Date(date).toLocaleDateString('ru');
+    }
   main.main-page
     h1.visually-hidden Главная страница личного блога Типотека
     p
@@ -65,7 +75,7 @@ block content
                     a.preview__breadcrumbs-link(href='/articles/category/'+category.id) #{category.name}
               .preview__background
                 img.preview__background-image(src=`img/${article.picture}` width='460' height='240')
-              time.preview__time  #{article.createdDate}
+              time.preview__time  #{formatDate(article.createdAt)}
               h3.preview__name
                 a.preview__name-link(href=`/articles/${article.id}`) #{article.title}
               p.preview__text
