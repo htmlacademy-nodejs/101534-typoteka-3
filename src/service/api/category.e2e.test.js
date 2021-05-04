@@ -8,7 +8,9 @@ const initDB = require(`../lib/init-db`);
 
 const category = require(`./category`);
 const DataService = require(`../data-service/category`);
-const {HttpCode} = require(`../../constants`);
+const { HttpCode } = require(`../../constants`);
+
+const {makeTokens} = require(`../lib/jwt-helper`);
 
 const mockCategories = [
   `Программирование`,
@@ -136,3 +138,211 @@ describe(`API returns category list`, () => {
 
 });
 
+describe(`API creates a new category if data is valid`, () => {
+  const newCategory = {
+    name: "correct category name"
+  };
+
+  let response;
+  let app;
+
+  beforeAll(async () => {
+    const {accessToken, refreshToken} = makeTokens({id: 1});
+  	app = express();
+  	app.use(express.json());
+  	await initDB(mockDB, mockCategories, mockArticles, []);
+    category(app, new DataService(mockDB));
+    response = await request(app)
+      .post(`/categories/add`)
+      .set('authorization', `Bearer ${accessToken} ${refreshToken}`) 
+      .send(newCategory);;
+  });
+
+  test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.OK));
+  test(`Categories count is changed`, () => request(app)
+    .get(`/categories`)
+    .expect((res) => expect(res.body.length).toBe(5))
+  );
+
+});
+
+describe(`API refuses to create a new category without authorization`, () => {
+  const newCategory = {
+    name: "correct category name"
+  };
+
+  let response;
+  let app;
+
+  beforeAll(async () => {
+  	app = express();
+  	app.use(express.json());
+  	await initDB(mockDB, mockCategories, mockArticles, []);
+    category(app, new DataService(mockDB));
+    response = await request(app)
+      .post(`/categories/add`)
+      .set('authorization', `Bearer `) 
+      .send(newCategory);;
+  });
+
+  test(`Status code 401`, () => expect(response.statusCode).toBe(HttpCode.UNAUTHORIZED));
+
+});
+
+describe(`API refuses to create a new category if data is invalid`, () => {
+  const newCategory = {
+    name: "мало"
+  };
+
+  let response;
+  let app;
+
+  beforeAll(async () => {
+    const {accessToken, refreshToken} = makeTokens({id: 1});
+  	app = express();
+  	app.use(express.json());
+  	await initDB(mockDB, mockCategories, mockArticles, []);
+    category(app, new DataService(mockDB));
+    response = await request(app)
+      .post(`/categories/add`)
+      .set('authorization', `Bearer ${accessToken} ${refreshToken}`) 
+      .send(newCategory);;
+  });
+
+  test(`Status code 400 if category name is too short`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+
+});
+
+describe(`API correctly changes category name`, () => {
+  const newCategory = {
+    name: "new name"
+  };
+
+  let response;
+  let app;
+
+  beforeAll(async () => {
+    const {accessToken, refreshToken} = makeTokens({id: 1});
+  	app = express();
+  	app.use(express.json());
+  	await initDB(mockDB, mockCategories, mockArticles, []);
+    category(app, new DataService(mockDB));
+    response = await request(app)
+      .put(`/categories/1`)
+      .set('authorization', `Bearer ${accessToken} ${refreshToken}`) 
+      .send(newCategory);
+  });
+
+  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+
+  test(`Category name changed`, () => request(app)
+    .get(`/categories`)
+    .expect((res) => expect(res.body[0].name).toBe(`new name`))
+  );
+
+
+});
+
+describe(`API refuses to change category name without authorization`, () => {
+  const newCategory = {
+    name: "new name"
+  };
+
+  let response;
+  let app;
+
+  beforeAll(async () => {
+  	app = express();
+  	app.use(express.json());
+  	await initDB(mockDB, mockCategories, mockArticles, []);
+    category(app, new DataService(mockDB));
+    response = await request(app)
+      .put(`/categories/1`)
+      .set('authorization', `Bearer `) 
+      .send(newCategory);
+  });
+
+  test(`Status code 401`, () => expect(response.statusCode).toBe(HttpCode.UNAUTHORIZED));
+
+  test(`Category name doesnt changed`, () => request(app)
+    .get(`/categories`)
+    .expect((res) => expect(res.body[0].name).toBe(`Программирование`))
+  );
+
+});
+
+describe(`API refuses to change category name if data is invalid`, () => {
+  const newCategory = {
+    name: "too long category name 123123123123123123123123123123123"
+  };
+
+  let response;
+  let app;
+
+  beforeAll(async () => {
+    const {accessToken, refreshToken} = makeTokens({id: 1});
+  	app = express();
+  	app.use(express.json());
+  	await initDB(mockDB, mockCategories, mockArticles, []);
+    category(app, new DataService(mockDB));
+    response = await request(app)
+      .put(`/categories/1`)
+      .set('authorization', `Bearer ${accessToken} ${refreshToken}`) 
+      .send(newCategory);
+  });
+
+  test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+
+  test(`Category name doesnt changed`, () => request(app)
+    .get(`/categories`)
+    .expect((res) => expect(res.body[0].name).toBe(`Программирование`))
+  );
+
+});
+
+describe(`API correctly deletes a category`, () => {
+
+  let response;
+  let app;
+
+  beforeAll(async () => {
+    const {accessToken, refreshToken} = makeTokens({id: 1});
+  	app = express();
+  	app.use(express.json());
+  	await initDB(mockDB, mockCategories, mockArticles, []);
+    category(app, new DataService(mockDB));
+    response = await request(app)
+      .delete(`/categories/3`)
+      .set('authorization', `Bearer ${accessToken} ${refreshToken}`) 
+  });
+
+  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+  test(`Categories count is changed`, () => request(app)
+    .get(`/categories`)
+    .expect((res) => expect(res.body.length).toBe(3))
+  );
+
+});
+
+describe(`API refuses to delete a category without authorization`, () => {
+
+  let response;
+  let app;
+
+  beforeAll(async () => {
+  	app = express();
+  	app.use(express.json());
+  	await initDB(mockDB, mockCategories, mockArticles, []);
+    category(app, new DataService(mockDB));
+    response = await request(app)
+      .delete(`/categories/3`)
+      .set('authorization', `Bearer `) 
+  });
+
+  test(`Status code 401`, () => expect(response.statusCode).toBe(HttpCode.UNAUTHORIZED));
+  test(`Categories count is not changed`, () => request(app)
+    .get(`/categories`)
+    .expect((res) => expect(res.body.length).toBe(4))
+  );
+
+});

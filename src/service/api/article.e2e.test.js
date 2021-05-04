@@ -161,7 +161,7 @@ describe(`API returns a list of all articles`, () => {
 
   test(`Returns a list of 5 articles`, () => expect(response.body.length).toBe(5));
 
-  test(`First article's title equals "Финал на краю вселенной"`, () => expect(response.body[0].title).toBe(`Финал на краю вселенной`));
+  test(`First article's title equals "Биатлон в горах"`, () => expect(response.body[0].title).toBe(`Биатлон в горах`));
 
 });
 
