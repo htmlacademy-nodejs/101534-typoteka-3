@@ -1,13 +1,24 @@
 extends ../layout.pug
 
 block content
+  -
+    const formatDate = (date) => {
+      const newdate = new Date(date);
+      const formatMonth = (m) => {
+        if (m < 10) {
+          return `0${m}`;
+        }
+        return m;
+      };
+      return `${formatMonth(newdate.getUTCDate())}.${formatMonth(newdate.getMonth() + 1)}.${newdate.getUTCFullYear()}`;
+    }
   main.main-page.main-page--padding
     section.main-page__notes.notes
       h1.notes__title Мои записи
       ul.notes__list
         each article in articles
           li.notes__list-item
-            time.notes__item-time #{article.createdDate}
+            time.notes__item-time #{formatDate(article.createdAt)}
             a.notes__item-text(href='/articles/'+article.id) #{article.title}
             form(action=(`/articles/${article.id}`) method='POST')
               button.notes__button.button.button--close-item(type='submit' onclick='confirm("Точно удалить?")')

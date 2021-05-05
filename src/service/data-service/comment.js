@@ -26,11 +26,17 @@ class CommentService {
       return await this._Comment.findAll({
         raw: true,
         where: {articleId},
+        order: [
+          [`createdAt`, `DESC`]
+        ],
         include
       });
     } else {
       return await this._Comment.findAll({
         raw: true,
+        order: [
+          [`createdAt`, `DESC`]
+        ],
         include
       });
     }

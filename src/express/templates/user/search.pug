@@ -2,9 +2,15 @@ extends ../layout.pug
 
 block content
   -
-    const formatDate = (dateString) => {
-      const date = new Date(dateString);
-      return date.toLocaleString();
+    const formatDate = (date) => {
+      const newdate = new Date(date);
+      const formatMonth = (m) => {
+        if (m < 10) {
+          return `0${m}`;
+        }
+        return m;
+      };
+      return `${formatMonth(newdate.getUTCDate())}.${formatMonth(newdate.getMonth() + 1)}.${newdate.getUTCFullYear()}`;
     }
   main
     section.search-page

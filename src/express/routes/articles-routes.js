@@ -66,7 +66,7 @@ articlesRouter.post(`/add`,
     async (req, res) => {
       const {body, file} = req;
       const articleData = {
-        picture: file.filename,
+        picture: file ? file.filename : null,
         createdDate: body.date,
         title: body.title,
         announce: body.announcement,

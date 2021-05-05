@@ -29,6 +29,7 @@ module.exports = Joi.object({
           'any.required': `Поле обязательно для заполнения`,
         }),
   picture: Joi.string()
+        .allow(null)
         .pattern(/^.*\.(jpg|JPG|jpeg|JPEG|png|PNG)$/)
         .messages({
           'string.pattern.base': `Изображение должно быть в формате png или jpg`,

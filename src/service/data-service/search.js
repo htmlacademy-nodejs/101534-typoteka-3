@@ -14,6 +14,9 @@ class SearchService {
           [Op.substring]: searchText
         }
       },
+      order: [
+        [`createdAt`, `DESC`]
+      ],
       include: `categories`,
     });
     return articles.map((article) => article.get());

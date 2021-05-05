@@ -79,10 +79,19 @@ class ArticleService {
 
   async findOne(id, needComments) {
     const include = [`categories`];
+    let result;
     if (needComments) {
-      include.push({association: `comments`, include: [`User`]});
+      include.push({
+        association: `comments`,
+        include: [`User`],
+      });
+      result = await this._Article.findByPk(id, {include, order: [
+        [`comments`, `createdAt`, `DESC`]
+      ]
+      });
+      return result;
     }
-    const result = await this._Article.findByPk(id, {include});
+    result = await this._Article.findByPk(id, {include});
     return result;
   }
 

@@ -2,9 +2,18 @@ extends ../layout.pug
 
 block content
   -
-    const formatDate = (dateString) => {
-      const date = new Date(dateString);
-      return date.toLocaleString();
+    const formatDate = (date, needTime) => {
+      const newdate = new Date(date);
+      const formatMonth = (m) => {
+        if (m < 10) {
+          return `0${m}`;
+        }
+        return m;
+      };
+      if (needTime) {
+        return `${formatMonth(newdate.getUTCDate())}.${formatMonth(newdate.getMonth() + 1)}.${newdate.getUTCFullYear()} ${newdate.getHours()}:${newdate.getMinutes()}`;
+      }
+      return `${formatMonth(newdate.getUTCDate())}.${formatMonth(newdate.getMonth() + 1)}.${newdate.getUTCFullYear()}`;
     }
   main.main-page.main-page--padding
     section.main-page__publication.publication
@@ -18,7 +27,7 @@ block content
                   img.publication__list-image(src=`img/avatars/${comment['User.avatar']}` width='20' height='20' alt='Аватар пользователя')
                 b.publication__list-name #{comment['User.firstName']} #{comment['User.lastName']} 
                 time.publication__item-time(datetime=`#{formatDate(comment.createdAt)}`) 
-                  | #{formatDate(comment.createdAt)}
+                  | #{formatDate(comment.createdAt, true)}
               a.publication__item-text(href='/articles/'+comment.articleId)
                 | #{comment.text}
               p.publication__text-strong

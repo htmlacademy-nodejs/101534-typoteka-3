@@ -17,7 +17,7 @@ block content
         }
         return m;
       };
-      return `${newdate.getUTCDate()}.${formatMonth(newdate.getMonth() + 1)}.${newdate.getUTCFullYear()}`;
+      return `${formatMonth(newdate.getUTCDate())}.${formatMonth(newdate.getMonth() + 1)}.${newdate.getUTCFullYear()}`;
     }
   main.main-page
     h1.visually-hidden Главная страница личного блога Типотека
@@ -73,8 +73,9 @@ block content
                 each category in article.categories
                   li.preview__breadcrumbs-item
                     a.preview__breadcrumbs-link(href='/articles/category/'+category.id) #{category.name}
-              .preview__background
-                img.preview__background-image(src=`img/${article.picture}` width='460' height='240')
+              if article.picture
+                .preview__background
+                  img.preview__background-image(src=`img/${article.picture}` width='460' height='240')
               time.preview__time  #{formatDate(article.createdAt)}
               h3.preview__name
                 a.preview__name-link(href=`/articles/${article.id}`) #{article.title}
