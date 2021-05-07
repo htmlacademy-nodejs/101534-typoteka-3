@@ -16,6 +16,11 @@ const PUBLIC_DIR = `public`;
 const UPLOAD_DIR = `upload`;
 
 const app = express();
+const http = require(`http`);
+const server = http.createServer(app);
+const io = require(`socket.io`)(server);
+
+app.locals.io = io;
 
 app.use(helmet.xssFilter());
 
@@ -41,8 +46,13 @@ app.use((err, req, res) => res.status(500).render(`errors/500`));
 app.set(`views`, path.resolve(__dirname, `templates`));
 app.set(`view engine`, `pug`);
 
+io.on(`connection`, (socket) => {
+  socket.on(`comment`, (data) => {
+    socket.broadcast.emit(`comment`, data);
+  });
+});
 
-app.listen(DEFAULT_PORT)
+server.listen(DEFAULT_PORT)
   .on(`listening`, () => {
     return console.info(chalk.green(`Ожидаю соединений на ${DEFAULT_PORT}`));
   })

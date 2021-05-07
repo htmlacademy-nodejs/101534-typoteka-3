@@ -29,6 +29,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage});
 
+const dispatchCommentEvent = async (req) => {
+  const {io} = req.app.locals;
+  const [articles, comments] = await Promise.all([
+    api.getPopularArticles(),
+    api.getRecentComments()
+  ]);
+  io.emit(`comment`, {articles, comments});
+};
+
 articlesRouter.get(`/category/:id`, checkAuth(api), async (req, res) => {
   let {page = 1} = req.query;
   page = +page;
@@ -150,6 +159,7 @@ articlesRouter.post(`/:id`, checkAuth(api), async (req, res) => {
 
   try {
     await api.dropArticle(id, `Bearer ${req.cookies.accessToken.split(`=`)[0]} ${req.cookies.refreshToken.split(`=`)[0]}`);
+    dispatchCommentEvent(req);
     res.redirect(`/my`);
   } catch (err) {
     res.status(400).render(`errors/404`);
@@ -161,6 +171,7 @@ articlesRouter.post(`/:id/comment/:commentId`, checkAuth(api), async (req, res) 
   const {commentId} = req.params;
   try {
     await api.dropComment(commentId, `Bearer ${req.cookies.accessToken.split(`=`)[0]} ${req.cookies.refreshToken.split(`=`)[0]}`);
+    dispatchCommentEvent(req);
     res.redirect(`/my/comments`);
   } catch (err) {
     res.status(400).render(`errors/404`);
@@ -179,8 +190,8 @@ articlesRouter.post(`/:id/comments`, checkAuth(api), upload.single(`photo`), asy
   };
 
   try {
-
     await api.createComment(id, commentData);
+    dispatchCommentEvent(req);
     res.redirect(`/articles/${id}`);
   } catch (e) {
     const errorMessages = e.response.data.message;
