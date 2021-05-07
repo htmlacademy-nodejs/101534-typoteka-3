@@ -22,7 +22,10 @@ block content
         h2.visually-hidden Основное содержание
         .post__wrapper
           .post__head
-            a.post__backwards.button.button--backwards(href='/') Назад
+            if previousPage
+              a.post__backwards.button.button--backwards(href=`${previousPage}`) Назад
+            if !previousPage
+              a.post__backwards.button.button--backwards(href=`/`) Назад
             time.post__date(datetime=`#{article.createdAt}`) #{formatDate(article.createdAt)}
             h2.post__title.title.title--main #{article.title}
             ul.post__themes.themes

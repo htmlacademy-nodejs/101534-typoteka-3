@@ -134,9 +134,10 @@ articlesRouter.post(`/edit/:id`, [upload.single(`photo`), parseForm, csrfProtect
 articlesRouter.get(`/:id`, checkAuth(api), async (req, res) => {
   const {id} = req.params;
   const {user} = res.locals;
+  const previousPage = req.headers.referer;
   try {
     const article = await api.getArticle(id, true);
-    res.render(`user/post`, {article, user});
+    res.render(`user/post`, {article, user, previousPage});
 
   } catch (err) {
     res.status(400).render(`errors/404`);
