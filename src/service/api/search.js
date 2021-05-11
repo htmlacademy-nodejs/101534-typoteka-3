@@ -9,17 +9,22 @@ module.exports = (app, service) => {
   app.use(`/search`, route);
 
   route.get(`/`, async (req, res) => {
-    const {query = ``} = req.query;
+    try {
+      const {query = ``} = req.query;
 
-    if (!query) {
-      res.status(HttpCode.BAD_REQUEST).json([]);
-      return;
+      if (!query) {
+        res.status(HttpCode.BAD_REQUEST).json([]);
+        return;
+      }
+
+      const searchResults = await service.findAll(query);
+      const searchStatus = searchResults.length > 0 ? HttpCode.OK : HttpCode.NOT_FOUND;
+
+      res.status(searchStatus)
+        .json(searchResults);
+    } catch (e) {
+      res.status(HttpCode.INTERNAL_SERVER_ERROR);
     }
 
-    const searchResults = await service.findAll(query);
-    const searchStatus = searchResults.length > 0 ? HttpCode.OK : HttpCode.NOT_FOUND;
-
-    res.status(searchStatus)
-      .json(searchResults);
   });
 };

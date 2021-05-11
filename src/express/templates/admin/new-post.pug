@@ -54,7 +54,8 @@ block content
                     each category in categories
                       .new-publication__checkbox.new-publication__checkbox--auto
                         input(type='checkbox' name='categories' id=category.id value=category.id)
-                        label(for=category.id) #{category.name}                  
+                        label(for=category.id) #{category.name}
+                  a.new-publication__form-link.button.button--transparent(href='/categories') Добавить категорию                  
               .form__wrapper.form__wrapper--text
                 .form__field.form__field--publication-text
                   +errorMessage(errorMessages, 'announce')

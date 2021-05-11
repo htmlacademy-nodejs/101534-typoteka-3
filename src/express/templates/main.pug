@@ -44,7 +44,7 @@ block content
                 a.hot__list-link(href=`/articles/${p.id}`)
                   | #{formatAnnounce(p.announce)}
                   sup.hot__link-sup #{p.comments.length}
-        if !popular
+        if !popular.length
           p 
             | Здесь ничего нет
       section.main-page__last.last
@@ -60,7 +60,7 @@ block content
                 b.last__list-name #{comment['User.firstName']} #{comment['User.lastName']}
                 a.last__list-link(href=`articles/${comment['Article.id']}`)
                   | #{formatAnnounce(comment.text)}
-        if !comments
+        if !comments.length
           p 
             | Здесь ничего нет
     section.main-page__list.preview
@@ -86,7 +86,7 @@ block content
                   | Комментарии 
                   span.preview__cloud
                   b.preview__comment-count #{article.comments.length}
-      if !articles
+      if !articles.length
         .main-page__empty-wrapper
           p.main-page__empty-text Здесь пока пусто!
   +pagination(page, totalPages, 2, `?`)  
