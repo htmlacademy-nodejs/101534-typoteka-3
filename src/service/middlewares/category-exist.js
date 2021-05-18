@@ -9,7 +9,7 @@ module.exports = (service) => (
 
     if (exist) {
       res.status(HttpCode.BAD_REQUEST)
-                      .json({message: [{alreadyExist: `Такая категория уже существует`}]});
+        .json({message: [{alreadyExist: `Такая категория уже существует`}]});
       return;
     }
 

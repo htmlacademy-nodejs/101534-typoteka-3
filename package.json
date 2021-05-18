@@ -9,6 +9,8 @@
     "eslint": "eslint --ext .js src/",
     "backend::dev": "cross-env LOG_LEVEL=info NODE_ENV=development node -r dotenv/config ./src/service/service.js",
     "backend": "cross-env LOG_LEVEL=error NODE_ENV=production node -r dotenv/config ./src/service/service.js",
+    "filldb": "npm run backend -- --filldb",
+    "emptydb": "npm run backend -- --emptydb",
     "start-front-server": "nodemon -r dotenv/config ./src/express",
     "start": "concurrently --names \"SSR, BACKEND\" \"npm run start-front-server\" \"npm run backend::dev -- --server\""
   },

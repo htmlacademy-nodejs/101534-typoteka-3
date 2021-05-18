@@ -15,31 +15,46 @@ module.exports = (app, articleService, commentService, userService) => {
   app.use(`/articles`, route);
 
   route.get(`/`, async (req, res) => {
-    const {offset, limit} = req.query;
-    let result;
-    if (limit || offset) {
-      result = await articleService.findPage({limit, offset});
-    } else {
-      result = await articleService.findAll(true);
+    try {
+      const {offset, limit} = req.query;
+      let result;
+      if (limit || offset) {
+        result = await articleService.findPage({limit, offset});
+      } else {
+        result = await articleService.findAll(true);
+      }
+      return res.status(HttpCode.OK).json(result);
+
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
     }
-    res.status(HttpCode.OK).json(result);
   });
 
   route.get(`/popular`, async (req, res) => {
-    const result = await articleService.findPopular();
+    try {
+      const result = await articleService.findPopular();
 
-    res.status(HttpCode.OK).json(result);
+      return res.status(HttpCode.OK).json(result);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
+    }
+
   });
 
   route.get(`/user`, authenticateJwt, async (req, res) => {
+    try {
+      let user = await userService.findToken(req.headers[`authorization`].split(` `)[2]) || {id: 1};
+      if (user.id !== ADMIN_ID) {
+        return res.status(HttpCode.FORBIDDEN);
+      }
 
-    let user = await userService.findToken(req.headers[`authorization`].split(` `)[2]) || {id: 1};
-    if (user.id !== ADMIN_ID) {
-      return res.status(HttpCode.FORBIDDEN);
+      const result = await articleService.findAll(false);
+      return res.status(HttpCode.OK).json(result);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
     }
 
-    const result = await articleService.findAll(false);
-    return res.status(HttpCode.OK).json(result);
+
   });
 
   route.get(`/user/comments`, authenticateJwt, async (req, res) => {
@@ -58,91 +73,129 @@ module.exports = (app, articleService, commentService, userService) => {
   });
 
   route.get(`/comments`, async (req, res) => {
-
-    const comments = await commentService.findRecent();
-    return res.status(HttpCode.OK).json(comments);
+    try {
+      const comments = await commentService.findRecent();
+      return res.status(HttpCode.OK).json(comments);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
+    }
 
   });
 
   route.get(`/:articleId`, paramValidator(`articleId`), async (req, res) => {
-    const {articleId} = req.params;
-    const article = await articleService.findOne(articleId, true);
+    try {
+      const {articleId} = req.params;
+      const article = await articleService.findOne(articleId, true);
 
-    if (!article) {
-      return res.status(HttpCode.NOT_FOUND)
-        .send(`Not found with ${articleId}`);
+      if (!article) {
+        return res.status(HttpCode.NOT_FOUND)
+          .send(`Not found with ${articleId}`);
+      }
+
+      return res.status(HttpCode.OK)
+        .json(article);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
     }
 
-    return res.status(HttpCode.OK)
-      .json(article);
   });
 
   route.post(`/`, [authenticateJwt, validator(articleSchema)], async (req, res) => {
-    const user = await userService.findToken(req.headers[`authorization`].split(` `)[2]) || {id: 1};
-    if (user.id !== ADMIN_ID) {
-      return res.status(HttpCode.FORBIDDEN);
-    }
-    const article = await articleService.create(req.body, user.id);
+    try {
+      const user = await userService.findToken(req.headers[`authorization`].split(` `)[2]) || {id: 1};
+      if (user.id !== ADMIN_ID) {
+        return res.status(HttpCode.FORBIDDEN);
+      }
+      const article = await articleService.create(req.body, user.id);
 
-    return res.status(HttpCode.CREATED)
-      .json(article);
+      return res.status(HttpCode.CREATED)
+        .json(article);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
+    }
+
   });
 
   route.put(`/:articleId`, [authenticateJwt, paramValidator(`articleId`), validator(articleSchema)], async (req, res) => {
-    const {articleId} = req.params;
-    const updated = await articleService.update(articleId, req.body);
+    try {
+      const {articleId} = req.params;
+      const updated = await articleService.update(articleId, req.body);
 
-    if (!updated) {
-      return res.status(HttpCode.NOT_FOUND)
-        .send(`Not found with ${articleId}`);
+      if (!updated) {
+        return res.status(HttpCode.NOT_FOUND)
+          .send(`Not found with ${articleId}`);
+      }
+
+      const updatedArticle = articleService.update(articleId, req.body);
+
+      return res.status(HttpCode.OK)
+        .json(updatedArticle);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
     }
 
-    const updatedArticle = articleService.update(articleId, req.body);
-
-    return res.status(HttpCode.OK)
-      .json(updatedArticle);
   });
 
   route.delete(`/:articleId`, [authenticateJwt, paramValidator(`articleId`)], async (req, res) => {
-    const {articleId} = req.params;
-    const article = await articleService.drop(articleId);
+    try {
+      const {articleId} = req.params;
+      const article = await articleService.drop(articleId);
 
-    if (!article) {
-      return res.status(HttpCode.NOT_FOUND)
-        .send(`Not found`);
+      if (!article) {
+        return res.status(HttpCode.NOT_FOUND)
+          .send(`Not found`);
+      }
+
+      return res.status(HttpCode.OK)
+        .json(article);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
     }
 
-    return res.status(HttpCode.OK)
-      .json(article);
   });
 
   route.get(`/:articleId/comments`, [paramValidator(`articleId`), articleExist(articleService)], async (req, res) => {
-    const {articleId} = req.params;
-    const comments = await commentService.findAll(articleId);
+    try {
+      const {articleId} = req.params;
+      const comments = await commentService.findAll(articleId);
 
-    res.status(HttpCode.OK)
-      .json(comments);
+      return res.status(HttpCode.OK)
+        .json(comments);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
+    }
+
 
   });
 
   route.delete(`/comments/:commentId`, [authenticateJwt, paramValidator(`commentId`)], async (req, res) => {
-    const {commentId} = req.params;
-    const deletedComment = await commentService.drop(commentId);
+    try {
+      const {commentId} = req.params;
+      const deletedComment = await commentService.drop(commentId);
 
-    if (!deletedComment) {
-      return res.status(HttpCode.NOT_FOUND)
-        .send(`Not found`);
+      if (!deletedComment) {
+        return res.status(HttpCode.NOT_FOUND)
+          .send(`Not found`);
+      }
+
+      return res.status(HttpCode.OK)
+        .json(deletedComment);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
     }
 
-    return res.status(HttpCode.OK)
-      .json(deletedComment);
   });
 
   route.post(`/:articleId/comments`, [paramValidator(`articleId`), validator(commentSchema), articleExist(articleService)], async (req, res) => {
-    const {articleId} = req.params;
-    const comment = await commentService.create(articleId, req.body);
+    try {
+      const {articleId} = req.params;
+      const comment = await commentService.create(articleId, req.body);
 
-    return res.status(HttpCode.CREATED)
-      .json(comment);
+      return res.status(HttpCode.CREATED)
+        .json(comment);
+    } catch (e) {
+      return res.status(HttpCode.INTERNAL_SERVER_ERROR);
+    }
+
   });
 };

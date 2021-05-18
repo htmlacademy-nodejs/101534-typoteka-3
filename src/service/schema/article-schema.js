@@ -15,6 +15,7 @@ module.exports = Joi.object({
 
   text: Joi.string()
             .max(1000)
+            .allow(null, ``)
             .messages({
               'string.max': `Максимум 1000 символов`,
             }),

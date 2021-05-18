@@ -74,13 +74,17 @@ articlesRouter.post(`/add`,
     [upload.single(`photo`), parseForm, csrfProtection, checkAuth(api)],
     async (req, res) => {
       const {body, file} = req;
+      let {categories} = body;
+      if (typeof categories === `string`) {
+        categories = [...categories];
+      }
       const articleData = {
         picture: file ? file.filename : null,
         createdDate: body.date,
         title: body.title,
         announce: body.announcement,
         text: body[`full-text`],
-        categories: body.categories
+        categories
       };
       const user = res.locals.user;
 
@@ -96,7 +100,7 @@ articlesRouter.post(`/add`,
           errorMessages = e.response.data.message;
         }
 
-        const categories = await api.getCategories(true);
+        categories = await api.getCategories(true);
         res.render(`admin/new-post`, {articleData, errorMessages, categories, user, csrf: req.csrfToken()});
       }
     }
