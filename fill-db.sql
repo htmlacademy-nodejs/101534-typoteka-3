@@ -1,10 +1,10 @@
 /* Добавляет пользователей */
-INSERT INTO users(email, password_hash, first_name, last_name, avatar) VALUES
+INSERT INTO users("email", "password", "firstName", "lastName", "avatar") VALUES
 ('ivanov@example.com', '5f4dcc3b5aa765d61d8327deb882cf99', 'Иван', 'Иванов', 'avatar1.jpg'),
 ('petrov@example.com', '5f4dcc3b5aa765d61d8327deb882cf99', 'Пётр', 'Петров', 'avatar2.jpg'),
 ('test@example.com', '5f4dcc3b5aa765d61d8327deb882cf99', 'Тест', 'Тестов', 'avatar3.jpg');
 /* Добавляет категории */
-INSERT INTO categories(name) VALUES
+INSERT INTO categories("name") VALUES
 ('Деревья'),
 ('За жизнь'),
 ('Без рамки'),
@@ -19,21 +19,21 @@ INSERT INTO categories(name) VALUES
 ('Путешествия');
 /* Добавляет публикации */
 ALTER TABLE articles DISABLE TRIGGER ALL;
-INSERT INTO articles(title, announce, text, picture, user_id) VALUES
+INSERT INTO articles("title", "announce", "text", "picture", "userId") VALUES
 ('Учим HTML и CSS', 'Анонс Учим HTML и CSS', 'Из под его пера вышло 8 платиновых альбомов. Помните, небольшое количество ежедневных упражнений лучше, чем один раз, но много. Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле? Собрать камни бесконечности легко, если вы прирожденный герой. Достичь успеха помогут ежедневные повторения. Это один из лучших рок-музыкантов. Как начать действовать? Для начала просто соберитесь. Золотое сечение — соотношение двух величин, гармоническая пропорция.', 'item06.jpg', 3),
 ('Что такое золотое сечение', 'Анонс Учим HTML и CSS', 'Золотое сечение — соотношение двух величин, гармоническая пропорция. Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле? Собрать камни бесконечности легко, если вы прирожденный герой. Он написал больше 30 хитов. Леброн пробежал половину площадки с мячом в руках и забил сверху. Разве это не пробежка? Медведев сейчас так хорош, что обводит даже одноручным бэкхендом. Программировать не настолько сложно, как об этом говорят.', 'item09.jpg', 1),
 ('Бег, плавание или йога', 'Анонс Учим HTML и CSS', 'Он написал больше 30 хитов. Помните, небольшое количество ежедневных упражнений лучше, чем один раз, но много. Ёлки — это не просто красивое дерево. Это прочная древесина. Процессор заслуживает особого внимания. Он обязательно понравится геймерам со стажем. Бороться с прокрастинацией несложно. Просто действуйте. Маленькими шагами. Леброн пробежал половину площадки с мячом в руках и забил сверху. Разве это не пробежка?', 'item07.jpg', 1);
 ALTER TABLE articles ENABLE TRIGGER ALL;
 /* Связывает публикации с категориями */
 ALTER TABLE article_categories DISABLE TRIGGER ALL;
-INSERT INTO article_categories(article_id, category_id) VALUES
+INSERT INTO article_categories("ArticleId", "CategoryId") VALUES
 (1, 8),
 (2, 8),
 (3, 2);
 ALTER TABLE article_categories ENABLE TRIGGER ALL;
 /* Добавляет комментарии */
 ALTER TABLE comments DISABLE TRIGGER ALL;
-INSERT INTO COMMENTS(text, user_id, article_id) VALUES
+INSERT INTO COMMENTS("text", "userId", "articleId") VALUES
 ('Совсем немного... Согласен с автором!', 2, 1),
 ('Мне кажется или я уже читал это где-то? Хочу такую же футболку :-)', 3, 1),
 ('Согласен с автором!', 1, 1),
