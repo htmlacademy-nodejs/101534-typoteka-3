@@ -6,46 +6,55 @@ CREATE DATABASE typoteka
 GRANT ALL ON DATABASE typoteka TO dagda25;
 
 CREATE TABLE categories(
-  id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  name varchar(255) NOT NULL
+  "id" integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  "name" varchar(255) NOT NULL,
+  "createdAt" timestamp DEFAULT current_timestamp,
+  "updatedAt" timestamp DEFAULT current_timestamp
 );
 
 CREATE TABLE users(
-  id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  email varchar(255) UNIQUE NOT NULL,
-  password_hash varchar(255) NOT NULL,
-  first_name varchar(255) NOT NULL,
-  last_name varchar(255) NOT NULL,
-  avatar varchar(50) NOT NULL
+  "id" integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  "email" varchar(255) UNIQUE NOT NULL,
+  "password" varchar(255) NOT NULL,
+  "token" varchar(255),
+  "firstName" varchar(255) NOT NULL,
+  "lastName" varchar(255) NOT NULL,
+  "avatar" varchar(50) NOT NULL,
+  "createdAt" timestamp DEFAULT current_timestamp,
+  "updatedAt" timestamp DEFAULT current_timestamp
 );
 
 CREATE TABLE articles(
-  id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  title varchar(255) NOT NULL,
-  announce text NOT NULL,
-  text text NOT NULL,
-  picture varchar(50),
-  user_id integer NOT NULL,
-  created_at timestamp DEFAULT current_timestamp,
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  "id" integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  "title" varchar(255) NOT NULL,
+  "announce" text NOT NULL,
+  "text" text NOT NULL,
+  "picture" varchar(50),
+  "userId" integer NOT NULL,
+  "createdAt" timestamp DEFAULT current_timestamp,
+  "updatedAt" timestamp DEFAULT current_timestamp,
+  FOREIGN KEY ("userId") REFERENCES users(id)
 );
 
 CREATE TABLE comments(
-  id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  article_id integer NOT NULL,
-  user_id integer NOT NULL,
-  text text NOT NULL,
-  created_at timestamp DEFAULT current_timestamp,
-  FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (article_id) REFERENCES articles(id)
+  "id" integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  "articleId" integer NOT NULL,
+  "userId" integer NOT NULL,
+  "text" text NOT NULL,
+  "createdAt" timestamp DEFAULT current_timestamp,
+  "updatedAt" timestamp DEFAULT current_timestamp,
+  FOREIGN KEY ("userId") REFERENCES users(id),
+  FOREIGN KEY ("articleId") REFERENCES articles(id)
 );
 
 CREATE TABLE article_categories(
-  article_id integer NOT NULL,
-  category_id integer NOT NULL,
-  PRIMARY KEY (article_id, category_id),
-  FOREIGN KEY (article_id) REFERENCES articles(id),
-  FOREIGN KEY (category_id) REFERENCES categories(id)
+  "ArticleId" integer NOT NULL,
+  "CategoryId" integer NOT NULL,
+  "createdAt" timestamp DEFAULT current_timestamp,
+  "updatedAt" timestamp DEFAULT current_timestamp,
+  PRIMARY KEY ("ArticleId", "CategoryId"),
+  FOREIGN KEY ("ArticleId") REFERENCES articles(id),
+  FOREIGN KEY ("CategoryId") REFERENCES categories(id)
 );
 
 ALTER TABLE categories OWNER TO dagda25;
